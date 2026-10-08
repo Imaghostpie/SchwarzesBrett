@@ -152,13 +152,13 @@ namespace SchwarzesBrett
             await command.ExecuteNonQueryAsync();
         }
 
-        public async Task ListingSetStatus(int id, Status status)
+        public async Task ListingSetStatus(int id, int statusId)
         {
             using SqlConnection connection = new SqlConnection(_conString);
             using SqlCommand command = new SqlCommand(SqlCommandHelper.GetCommand(config, "ListingSetStatus"), connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@IDListing", id);
-            command.Parameters.AddWithValue("@status", status.Id);
+            command.Parameters.AddWithValue("@status", statusId);
 
             await connection.OpenAsync();
             await command.ExecuteNonQueryAsync();
@@ -250,6 +250,47 @@ namespace SchwarzesBrett
                 return null;
 
             return ((string)reader["filetype"], (byte[])reader["value"], reader["filename"] as string);
+        }
+        public async Task<ListingLookups> LookupsGetAll()
+        {
+            ListingLookups lookups = new();
+            using SqlConnection connection = new SqlConnection(_conString);
+            using SqlCommand command = new SqlCommand(SqlCommandHelper.GetCommand(config, "LookupsGetAll"), connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+
+            await connection.OpenAsync();
+            using SqlDataReader reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                lookups.Categories.Add(new Category
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    Name = Convert.ToString(reader["name"])!
+                });
+            }
+
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                lookups.ListingTypes.Add(new ListingType
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    Name = Convert.ToString(reader["name"])!
+                });
+            }
+
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                lookups.PriceCategories.Add(new PriceCategory
+                {
+                    Id = Convert.ToInt32(reader["Id"]),
+                    Name = Convert.ToString(reader["name"])!
+                });
+            }
+
+            return lookups;
         }
     }
 }

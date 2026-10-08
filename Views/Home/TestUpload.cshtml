@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Test-Upload";
+}
+
+<h2>Anhänge hochladen (Test)</h2>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<form asp-action="TestUpload" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Inserat-ID</label>
+        <input type="number" name="listingId" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Dateien</label>
+        <input type="file" name="files" class="form-control" multiple required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Hochladen</button>
+</form>

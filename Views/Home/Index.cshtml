@@ -1,8 +1,71 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-left">
+	<h1 class="display-4">Was willst du Bruder?</h1>
+	<div class="container">
+
+
+		<div class="row justify-content-center">
+			<div class="d-flex align-items-center gap-3">
+				<div class="search-container flex-grow-1">
+					<input type="text"
+						   class="form-control search-input"
+						   placeholder="Suche...">
+					<i class="fas fa-search search-icon"></i>
+				</div>
+				<div class="dropdown">
+					<button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Sortieren nach
+					</button>
+					<ul class="dropdown-menu">
+						<li><a class="dropdown-item" href="#">Datum aufsteigend</a></li>
+						<li><a class="dropdown-item" href="#">Datum absteigend</a></li>
+						<li><a class="dropdown-item" href="#">Preis aufsteigend</a></li>
+						<li><a class="dropdown-item" href="#">Preis absteigend</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-sm mt-5">
+		<div class="row">
+			<div class="col-3">
+				<div class="list-group">
+
+					<a href="#" class="list-group-item list-group-item-action"><span><i class="bi bi-grid-fill me-2"></i></span>alle Kategorien</a>
+					<a href="#" class="list-group-item list-group-item-action"><span><i class="bi bi-car-front-fill me-2"></i></span>Kategorie1</a>
+					<a href="#" class="list-group-item list-group-item-action">Kategorie2</a>
+					<a href="#" class="list-group-item list-group-item-action">Kategorie3</a>
+					<a href="#" class="list-group-item list-group-item-action">Kategorie4</a>
+				</div>
+			</div>
+			<div class="col-8">
+				<div class="row">
+					<div class="col ListingBox">
+						<div class="row">
+							<img src="~/Images/Sample.jpg" class="img-fluid" alt="placeholderimage">
+							<div class="d-flex rounded ListingIconBox bg-primary">
+								<i class="bi bi-house-fill ListingIcon"></i>
+							</div>
+						</div>
+						<div class="row">
+							<div class="ListingTitle">
+								<p class="fs-4">Angebotstitel</p>
+							</div>
+							<div>
+								<p class="fs-3 price">€€€,€€</p>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+					</div>
+					<div class="col">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

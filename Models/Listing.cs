@@ -15,6 +15,6 @@
         public required string ContactMail { get; set; }
         public required DateTime ValidUntil { get; set; }
         public required Status Status { get; set; }
-        public List<Attachment>? Attachments { get; set; }
+        public List<Attachment>? Attachments { get; set; } = new();
     }
 }

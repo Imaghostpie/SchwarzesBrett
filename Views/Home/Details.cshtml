@@ -1,0 +1,85 @@
+﻿@model Listing
+
+@{
+    var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
+    var pdfs = Model.Attachments.Where(a => a.FileType == "application/pdf").ToList();
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="defaultdiv">
+
+            @if (images.Count == 0)
+            {
+                <div class="gallery-empty">Keine Bilder vorhanden</div>
+            }
+            else
+            {
+                <div id="gallery" class="carousel slide" data-bs-interval="false">
+
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < images.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="@Url.Action("Attachment", new { id = images[i].Id })"
+                                     class="d-block gallery-image" />
+                            </div>
+                        }
+                    </div>
+
+                    @if (images.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button"
+                                data-bs-target="#gallery" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#gallery" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                        <span class="gallery-counter">
+                            <span id="currentIndex">1</span> / @images.Count
+                        </span>
+                    }
+                </div>
+
+                @if (images.Count > 1)
+                {
+                    <div class="gallery-tiles">
+                        @for (int i = 0; i < images.Count; i++)
+                        {
+                            <button type="button" class="gallery-tile @(i == 0 ? "active" : "")"
+                                    data-bs-target="#gallery" data-bs-slide-to="@i">
+                                <img src="@Url.Action("Attachment", new { id = images[i].Id })" />
+                            </button>
+                        }
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+
+    <!-- ================= Rechte Spalte: Infos (kommt später) ================= -->
+    <div class="col-lg-4">
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const gallery = document.getElementById('gallery');
+
+        if (gallery) {
+            gallery.addEventListener('slide.bs.carousel', function (e) {
+                const tiles = document.querySelectorAll('.gallery-tile');
+
+                tiles.forEach(function (tile, index) {
+                    tile.classList.toggle('active', index === e.to);
+                });
+
+                document.getElementById('currentIndex').textContent = e.to + 1;
+            });
+        }
+    </script>
+}
