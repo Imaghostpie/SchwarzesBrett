@@ -1,0 +1,322 @@
+﻿@model SchwarzesBrett.ViewModels.EditViewModel
+
+@{
+    ViewData["Title"] = "Inserat bearbeiten";
+
+    var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
+    var pdfs = Model.Attachments.Where(a => a.FileType == "application/pdf").ToList();
+}
+
+<!-- ================= Kopfzeile ================= -->
+<div class="page-header">
+    <a asp-action="Details" asp-route-id="@Model.Listing.Id" class="btn-back">‹ Abbrechen</a>
+    <div>
+        <h1 class="page-title">Inserat bearbeiten</h1>
+        <small class="text-muted">Inserat Nr. @Model.Listing.Id</small>
+    </div>
+</div>
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<div class="row g-4">
+
+    <!-- ===== Linke Spalte ===== -->
+    <div class="col-lg-8">
+
+        <!-- ========== Hauptformular: nur die Textfelder ========== -->
+        <form id="editForm" asp-action="Edit" asp-route-id="@Model.Listing.Id" method="post">
+
+            <!-- 1. Art des Inserats -->
+            <div class="defaultdiv p-4 mb-3">
+                <h5 class="section-heading"><span class="section-number">1</span> Art des Inserats</h5>
+
+                <div class="row g-3 mb-4">
+                    @foreach (var type in Model.Lookups.ListingTypes)
+                    {
+                        <div class="col-md-6">
+                            <input type="radio" class="choice-input" id="type-@type.Id"
+                                   name="Listing.ListingTypeId" value="@type.Id"
+                                   checked="@(Model.Listing.ListingTypeId == type.Id)" required />
+                            <label class="choice-card" for="type-@type.Id">
+                                <span class="choice-radio"></span>
+                                <span>
+                                    <strong class="d-block">@type.Name</strong>
+                                    <small class="text-muted">
+                                        @(type.Id == 1 ? "Etwas abgeben, verkaufen oder anbieten"
+                                                       : "Etwas finden, leihen oder Hilfe bekommen")
+                                    </small>
+                                </span>
+                            </label>
+                        </div>
+                    }
+                </div>
+
+                <label class="form-label fw-semibold">Kategorie</label>
+                <div class="choice-grid">
+                    @foreach (var category in Model.Lookups.Categories)
+                    {
+                        <input type="radio" class="choice-input" id="cat-@category.Id"
+                               name="Listing.CategoryId" value="@category.Id"
+                               checked="@(Model.Listing.CategoryId == category.Id)" required />
+                        <label class="choice-button" for="cat-@category.Id">@category.Name</label>
+                    }
+                </div>
+            </div>
+
+            <!-- 2. Titel & Beschreibung -->
+            <div class="defaultdiv p-4 mb-3">
+                <h5 class="section-heading"><span class="section-number">2</span> Titel & Beschreibung</h5>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <label asp-for="Listing.Name" class="form-label fw-semibold">Titel</label>
+                        <small class="text-muted"><span id="nameCount">0</span> / 80</small>
+                    </div>
+                    <input asp-for="Listing.Name" class="form-control" maxlength="80" required
+                           data-counter="nameCount" />
+                </div>
+
+                <div>
+                    <div class="d-flex justify-content-between">
+                        <label asp-for="Listing.Description" class="form-label fw-semibold">Beschreibung</label>
+                        <small class="text-muted"><span id="descriptionCount">0</span> / 2000</small>
+                    </div>
+                    <textarea asp-for="Listing.Description" class="form-control" rows="6"
+                              maxlength="2000" required data-counter="descriptionCount"></textarea>
+                </div>
+            </div>
+
+            <!-- 3. Preis -->
+            <div class="defaultdiv p-4 mb-3">
+                <h5 class="section-heading"><span class="section-number">3</span> Preis</h5>
+
+                <label class="form-label fw-semibold">Preiskategorie</label>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @foreach (var priceCategory in Model.Lookups.PriceCategories)
+                    {
+                        <input type="radio" class="choice-input price-category" id="price-@priceCategory.Id"
+                               name="Listing.PriceCategoryId" value="@priceCategory.Id"
+                               checked="@(Model.Listing.PriceCategoryId == priceCategory.Id)" required />
+                        <label class="choice-button px-3" for="price-@priceCategory.Id">@priceCategory.Name</label>
+                    }
+                </div>
+
+                <div id="priceGroup">
+                    <label for="priceInput" class="form-label fw-semibold">Preis</label>
+                    <div class="input-group" style="max-width: 200px">
+                        <input type="text" id="priceInput" name="Listing.Price" class="form-control"
+                               inputmode="decimal" value="@Model.Listing.Price" />
+                        <span class="input-group-text">€</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Kontakt -->
+            <div class="defaultdiv p-4 mb-3">
+                <h5 class="section-heading"><span class="section-number">4</span> Kontakt</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Listing.ContactMail" class="form-label fw-semibold">E-Mail</label>
+                        <input asp-for="Listing.ContactMail" type="email" class="form-control"
+                               maxlength="255" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Listing.ContactPhone" class="form-label fw-semibold">
+                            Telefon <span class="text-muted fw-normal">(optional)</span>
+                        </label>
+                        <input asp-for="Listing.ContactPhone" type="tel" class="form-control" maxlength="50" />
+                    </div>
+                </div>
+            </div>
+
+        </form>
+        <!-- ========== Ende Hauptformular ========== -->
+
+        <!-- 5. Fotos (eigene Formulare) -->
+        <div class="defaultdiv p-4 mb-3">
+            <h5 class="section-heading mb-1"><span class="section-number">5</span> Fotos</h5>
+            <small class="text-muted d-block mb-3">
+                Änderungen an Fotos werden <strong>sofort</strong> gespeichert. Speichere geänderte Texte vorher.
+            </small>
+
+            <div class="d-flex flex-wrap gap-2">
+                @for (int i = 0; i < images.Count; i++)
+                {
+                    <div class="photo-thumb">
+                        <img src="@Url.Action("Attachment", new { id = images[i].Id })" />
+
+                        @if (i == 0)
+                        {
+                            <span class="title-badge">Titelbild</span>
+                        }
+
+                        <form asp-action="AttachmentDelete" asp-route-id="@images[i].Id" method="post" class="photo-delete-form">
+                            <input type="hidden" name="listingId" value="@Model.Listing.Id" />
+                            <button type="submit" class="photo-delete" title="Entfernen"
+                                    onclick="return confirm('Bild wirklich entfernen?')">×</button>
+                        </form>
+                    </div>
+                }
+
+                <form asp-action="AttachmentAdd" method="post" enctype="multipart/form-data"
+                      class="dropzone dropzone-square">
+                    <input type="hidden" name="listingId" value="@Model.Listing.Id" />
+                    <input type="file" name="file" class="auto-upload"
+                           accept="image/jpeg,image/png,image/gif,image/webp" />
+                    <span class="dropzone-plus">+</span>
+                    <strong>Foto hinzufügen</strong>
+                </form>
+            </div>
+        </div>
+
+        <!-- 6. Anhänge (eigene Formulare) -->
+        <div class="defaultdiv p-4 mb-3">
+            <h5 class="section-heading mb-1"><span class="section-number">6</span> Anhänge</h5>
+            <small class="text-muted d-block mb-3">Änderungen werden sofort gespeichert.</small>
+
+            @foreach (var pdf in pdfs)
+            {
+                <div class="attachment-row">
+                    <div class="attachment-icon">PDF</div>
+                    <div class="flex-grow-1">
+                        <div class="fw-medium">@(pdf.FileName ?? $"Anhang-{pdf.Id}.pdf")</div>
+                        <small class="text-muted">@pdf.FileSizeText</small>
+                    </div>
+                    <form asp-action="AttachmentDelete" asp-route-id="@pdf.Id" method="post">
+                        <input type="hidden" name="listingId" value="@Model.Listing.Id" />
+                        <button type="submit" class="btn-delete-small"
+                                onclick="return confirm('Anhang wirklich entfernen?')">Entfernen</button>
+                    </form>
+                </div>
+            }
+
+            <form asp-action="AttachmentAdd" method="post" enctype="multipart/form-data"
+                  class="dropzone dropzone-wide mt-2">
+                <input type="hidden" name="listingId" value="@Model.Listing.Id" />
+                <input type="file" name="file" class="auto-upload" accept="application/pdf" />
+                <span><strong class="text-primary">↑ PDF hinzufügen</strong>
+                      <span class="text-muted">oder hierher ziehen · max. 5 MB</span></span>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- ===== Rechte Spalte ===== -->
+    <div class="col-lg-4">
+        <div class="sticky-sidebar">
+
+            <small class="fw-semibold text-muted d-block mb-2">Vorschau in der Übersicht</small>
+            <div class="defaultdiv p-0 overflow-hidden mb-3">
+                <div class="preview-image">
+                    <img id="previewImg" class="d-none" />
+                    <span id="previewNoImg" class="preview-noimg">kein Foto</span>
+                    <span id="previewCategory" class="preview-badge">Kategorie</span>
+                </div>
+                <div class="p-3">
+                    <div id="previewTitle" class="preview-title">Titel deines Inserats</div>
+                    <div id="previewPrice" class="preview-price">– €</div>
+                </div>
+            </div>
+
+            <div class="defaultdiv p-4">
+                <ul class="checklist">
+                    <li data-check="category">Kategorie gewählt</li>
+                    <li data-check="title">Titel</li>
+                    <li data-check="description">Beschreibung</li>
+                    <li data-check="price">Preis</li>
+                    <li data-check="photos">Fotos (optional)</li>
+                </ul>
+
+                <button type="submit" form="editForm" class="btn-contact mb-2">Änderungen speichern</button>
+                <a asp-action="Details" asp-route-id="@Model.Listing.Id" class="btn-cancel">Abbrechen</a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // ===== Zeichenzähler =====
+        document.querySelectorAll('[data-counter]').forEach(function (field) {
+            const counter = document.getElementById(field.dataset.counter);
+            function update() { counter.textContent = field.value.length; }
+            field.addEventListener('input', update);
+            update();
+        });
+
+        // ===== Preisfeld ein-/ausblenden =====
+        const noPriceIds = ['3', '4'];
+        const priceGroup = document.getElementById('priceGroup');
+        const priceInput = document.getElementById('priceInput');
+
+        function togglePrice() {
+            const selected = document.querySelector('.price-category:checked');
+            const hidePrice = selected && noPriceIds.includes(selected.value);
+            priceGroup.classList.toggle('d-none', hidePrice);
+            priceInput.required = !hidePrice;
+        }
+
+        document.querySelectorAll('.price-category').forEach(function (radio) {
+            radio.addEventListener('change', togglePrice);
+        });
+        togglePrice();
+
+        // ===== Datei sofort hochladen, sobald ausgewählt =====
+        document.querySelectorAll('.auto-upload').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.form.submit();
+            });
+        });
+
+        // ===== Live-Vorschau und Checkliste =====
+        const form = document.getElementById('editForm');
+        const firstImageUrl = '@(images.Count > 0 ? Url.Action("Attachment", new { id = images[0].Id }) : "")';
+
+        function setDone(key, isDone) {
+            document.querySelector('[data-check="' + key + '"]').classList.toggle('done', isDone);
+        }
+
+        function updatePreview() {
+            const category = document.querySelector('input[name="Listing.CategoryId"]:checked');
+            document.getElementById('previewCategory').textContent =
+                category ? document.querySelector('label[for="' + category.id + '"]').textContent : 'Kategorie';
+            setDone('category', category !== null);
+
+            const title = document.getElementById('Listing_Name').value.trim();
+            const previewTitle = document.getElementById('previewTitle');
+            previewTitle.textContent = title || 'Titel deines Inserats';
+            previewTitle.classList.toggle('text-muted', title === '');
+            setDone('title', title !== '');
+
+            const description = document.getElementById('Listing_Description').value.trim();
+            setDone('description', description !== '');
+
+            const priceCategory = document.querySelector('.price-category:checked');
+            const price = priceInput.value.trim();
+            const noPrice = priceCategory && noPriceIds.includes(priceCategory.value);
+
+            document.getElementById('previewPrice').textContent = noPrice
+                ? document.querySelector('label[for="' + priceCategory.id + '"]').textContent
+                : (price || '–') + ' €';
+            setDone('price', priceCategory !== null && (noPrice || price !== ''));
+        }
+
+        // Foto: kommt hier aus der Datenbank, ändert sich beim Tippen nicht
+        if (firstImageUrl) {
+            document.getElementById('previewImg').src = firstImageUrl;
+            document.getElementById('previewImg').classList.remove('d-none');
+            document.getElementById('previewNoImg').classList.add('d-none');
+        }
+        setDone('photos', firstImageUrl !== '');
+
+        form.addEventListener('input', updatePreview);
+        form.addEventListener('change', updatePreview);
+        updatePreview();
+    </script>
+}

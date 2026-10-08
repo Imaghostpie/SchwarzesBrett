@@ -22,7 +22,10 @@
                         {
                             <div class="carousel-item @(i == 0 ? "active" : "")">
                                 <img src="@Url.Action("Attachment", new { id = images[i].Id })"
-                                     class="d-block gallery-image" />
+                                     class="d-block gallery-image"
+                                     data-bs-toggle="modal"
+                                    data-bs-target="#imageModal"
+                                    style="cursor: zoom-in;"/>
                             </div>
                         }
                     </div>
@@ -58,12 +61,149 @@
             }
 
         </div>
-    </div>
 
-    <!-- ================= Rechte Spalte: Infos (kommt später) ================= -->
+        <!-- Beschreibung -->
+        <div class="defaultdiv p-4 mt-3">
+            <h5 class="card-heading">Beschreibung</h5>
+            <p class="description mb-0">@Model.Description</p>
+        </div>
+
+        <!-- Anhänge (nur wenn PDFs vorhanden) -->
+        @if (pdfs.Count > 0)
+        {
+            <div class="defaultdiv p-4 mt-3">
+                <h5 class="card-heading">
+                    Anhänge <span class="text-muted fw-normal">(@pdfs.Count)</span>
+                </h5>
+
+                @foreach (var pdf in pdfs)
+                {
+                    <div class="attachment-row">
+                        <div class="attachment-icon">PDF</div>
+
+                        <div class="flex-grow-1">
+                            <div class="fw-medium">@(pdf.FileName ?? $"Anhang-{pdf.Id}.pdf")</div>
+                            <small class="text-muted">@pdf.FileSizeText</small>
+                        </div>
+
+                        <a href="@Url.Action("Attachment", new { id = pdf.Id })" class="btn-download">
+                            ↓ Herunterladen
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+
+            </div>
+
     <div class="col-lg-4">
-    </div>
+         <div class="defaultdiv p-4">
 
+            <!-- Badges -->
+            <div class="d-flex gap-2 mb-3">
+                <span class="badge-type">@Model.ListingType.Name</span>
+                <span class="badge-status status-@Model.Status.Id">● @Model.Status.Name</span>
+            </div>
+
+            <!-- Titel -->
+            <h1 class="listing-title">@Model.Name</h1>
+
+            <hr />
+
+            <!-- Preis -->
+            <div class="d-flex align-items-center gap-2">
+                @if (Model.Price != null)
+                {
+                    <span class="listing-price">@Model.Price.Value.ToString("#,0.## €")</span>
+                    <span class="price-pill">@Model.PriceCategory.Name</span>
+                }
+                else
+                {
+                    <span class="listing-price">@Model.PriceCategory.Name</span>
+                }
+
+                <!-- Button: sichtbar, bis man draufklickt -->
+                <button type="button" id="showContactBtn" class="btn-contact mt-3">
+                    Kontakt anzeigen
+                </button>
+
+                <!-- Kontaktdaten: erst versteckt -->
+                <div id="contactInfo" class="d-none mt-3">
+                    <a href="mailto:@Model.ContactMail" class="contact-tile contact-tile-primary">
+                        <small>E-Mail</small>
+                        <strong>@Model.ContactMail</strong>
+                    </a>
+
+                    @if (!string.IsNullOrEmpty(Model.ContactPhone))
+                    {
+                        <a href="tel:@Model.ContactPhone" class="contact-tile">
+                            <small>Telefon</small>
+                            <strong>@Model.ContactPhone</strong>
+                        </a>
+                    }
+            </div>
+
+            <div class="defaultdiv p-3 mt-3 d-flex align-items-center gap-3">
+                <div class="avatar">@Model.CreatorInitials</div>
+                <div>
+                    <small class="text-muted d-block">Inseriert von</small>
+                    <strong>@Model.CreatorName</strong>
+                </div>
+            </div>
+
+            <div class="defaultdiv p-4 mt-3">
+                <dl class="facts mb-0">
+                    <div>
+                        <dt>Typ</dt>
+                        <dd>@Model.ListingType.Name</dd>
+                    </div>
+                    <div>
+                        <dt>Kategorie</dt>
+                        <dd>@Model.Category.Name</dd>
+                    </div>
+                    <div>
+                        <dt>Preiskategorie</dt>
+                        <dd>@Model.PriceCategory.Name</dd>
+                    </div>
+                    <div>
+                        <dt>Status</dt>
+                        <dd>@Model.Status.Name</dd>
+                    </div>
+                    <div>
+                        <dt>Erstellt am</dt>
+                        <dd>@Model.CreatedAt.ToString("dd.MM.yyyy")</dd>
+                    </div>
+                    <div>
+                        <dt>Gültig bis</dt>
+                        <dd>
+                            @Model.ValidUntil.ToString("dd.MM.yyyy")
+                            @if (Model.DaysLeft >= 0)
+                            {
+                                <span>(noch @Model.DaysLeft @(Model.DaysLeft == 1 ? "Tag" : "Tage"))</span>
+                            }
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Inserat-Nr.</dt>
+                        <dd>@Model.Id</dd>
+                    </div>
+                </dl>
+</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark border-0">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center p-0 pb-3">
+                <img id="modalImage" src="" class="img-fluid" style="max-height: 80vh" />
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -76,10 +216,18 @@
 
                 tiles.forEach(function (tile, index) {
                     tile.classList.toggle('active', index === e.to);
+
+                    document.getElementById('imageModal').addEventListener('show.bs.modal', function (e) {
+                    document.getElementById('modalImage').src = e.relatedTarget.src;
                 });
 
                 document.getElementById('currentIndex').textContent = e.to + 1;
             });
         }
+
+        document.getElementById('showContactBtn').addEventListener('click', function () {
+            this.classList.add('d-none');                                       // Button verstecken
+            document.getElementById('contactInfo').classList.remove('d-none');  // Kontakt zeigen
+});
     </script>
 }

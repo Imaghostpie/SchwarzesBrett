@@ -116,7 +116,8 @@ namespace SchwarzesBrett
                 {
                     Id = Convert.ToInt32(reader["IDAttachment"]),
                     FileType = Convert.ToString(reader["filetype"])!,
-                    FileName = reader["filename"] as string
+                    FileName = reader["filename"] as string,
+                    FileSize = Convert.ToInt64(reader["filesize"])
                 });
             }
 

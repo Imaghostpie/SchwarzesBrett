@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -27,7 +27,7 @@ body {
     padding: 10px;
 }
 
-/* ===== Gro�es Bild ===== */
+/* ===== Großes Bild ===== */
 .gallery-image {
     width: 100%;
     height: 420px;
@@ -86,3 +86,501 @@ body {
     font-size: 0.75rem;
     font-weight: 600;
 }
+
+/* Badges */
+.badge-type,
+.badge-status {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-type {
+    background-color: #1a66e0;
+    color: white;
+}
+
+.status-1 {
+    background-color: #e3f6e8;
+    color: #1e7a3a;
+}
+/* Aktiv */
+.status-2 {
+    background-color: #fff4d6;
+    color: #8a6100;
+}
+/* Reserviert */
+.status-3 {
+    background-color: #eceef2;
+    color: #555b66;
+}
+/* Verkauft */
+.status-4 {
+    background-color: #fde8e8;
+    color: #a12a2a;
+}
+/* Abgelaufen */
+
+/* Titel & Preis */
+.listing-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.listing-price {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a66e0;
+}
+
+.price-pill {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background-color: #eef1f6;
+    color: #6b7385;
+    font-size: 0.75rem;
+}
+
+.btn-contact {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #1a66e0;
+    color: white;
+    font-weight: 600;
+}
+
+    .btn-contact:hover {
+        background-color: #1555bd;
+    }
+
+.contact-tile {
+    display: block;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border: 1px solid #e3e7ee;
+    border-radius: 8px;
+    color: #1b2235;
+    text-decoration: none;
+}
+
+    .contact-tile small {
+        display: block;
+        font-size: 0.7rem;
+        color: #6b7385;
+    }
+
+.contact-tile-primary {
+    background-color: #1a66e0;
+    border-color: #1a66e0;
+    color: white;
+}
+
+    .contact-tile-primary small {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #e3ebfa;
+    color: #1a66e0;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.facts div {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e3e7ee;
+    font-size: 0.875rem;
+}
+
+    .facts div:last-child {
+        border-bottom: none;
+    }
+
+.facts dt {
+    font-weight: 400;
+    color: #6b7385;
+}
+
+.facts dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+}
+
+.card-heading {
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.description {
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+.attachment-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border: 1px solid #e3e7ee;
+    border-radius: 8px;
+}
+
+    .attachment-row:last-child {
+        margin-bottom: 0;
+    }
+
+.attachment-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background-color: #fde8e8;
+    color: #c0392b;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.btn-download {
+    padding: 6px 14px;
+    border: 1px solid #1a66e0;
+    border-radius: 6px;
+    color: #1a66e0;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .btn-download:hover {
+        background-color: #1a66e0;
+        color: white;
+    }
+
+/* ===== Kopfzeile ===== */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.btn-back {
+    padding: 6px 12px;
+    border: 1px solid #e3e7ee;
+    border-radius: 8px;
+    background-color: white;
+    color: #1a66e0;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ===== Abschnitts-Überschrift mit Nummer ===== */
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.section-number {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #e3ebfa;
+    color: #1a66e0;
+    font-size: 0.8rem;
+}
+
+/* ===== Radiobuttons verstecken ===== */
+.choice-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===== Große Kacheln (Biete / Suche) ===== */
+.choice-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    height: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d5dbe5;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.choice-radio {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    border: 2px solid #b4bccb;
+    border-radius: 50%;
+}
+
+.choice-input:checked + .choice-card {
+    border-color: #1a66e0;
+    background-color: #f0f5ff;
+}
+
+    .choice-input:checked + .choice-card .choice-radio {
+        border: 5px solid #1a66e0;
+    }
+
+/* ===== Kleine Buttons (Kategorie) ===== */
+.choice-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.choice-button {
+    display: block;
+    padding: 8px;
+    border: 1px solid #d5dbe5;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.choice-input:checked + .choice-button {
+    border-color: #1a66e0;
+    background-color: #f0f5ff;
+    color: #1a66e0;
+    font-weight: 600;
+}
+
+/* Tastatur-Fokus sichtbar machen */
+.choice-input:focus-visible + .choice-card,
+.choice-input:focus-visible + .choice-button {
+    outline: 2px solid #1a66e0;
+    outline-offset: 2px;
+}
+
+.dropzone {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px dashed #b4c6e8;
+    border-radius: 8px;
+    background-color: #f5f8fd;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+    .dropzone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+.dropzone-square {
+    width: 110px;
+    height: 110px;
+    flex-direction: column;
+    color: #1a66e0;
+}
+
+.dropzone-wide {
+    padding: 22px;
+}
+
+.dropzone-plus {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.photo-thumb {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #e9edf3;
+}
+
+    .photo-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .photo-thumb .title-badge {
+        position: absolute;
+        left: 6px;
+        bottom: 6px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background-color: #1a66e0;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 600;
+    }
+
+/* Rechte Spalte bleibt beim Scrollen stehen */
+.sticky-sidebar {
+    position: sticky;
+    top: 20px;
+}
+
+/* ===== Vorschau-Kachel ===== */
+.preview-image {
+    position: relative;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9edf3;
+}
+
+    .preview-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.preview-noimg {
+    padding: 2px 8px;
+    background-color: white;
+    font-size: 0.75rem;
+    color: #6b7385;
+}
+
+.preview-badge {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: white;
+    color: #1a66e0;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.preview-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.preview-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a66e0;
+}
+
+/* ===== Checkliste ===== */
+.checklist {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+}
+
+    .checklist li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 0;
+        font-size: 0.875rem;
+        color: #6b7385;
+    }
+
+        .checklist li::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #d5dbe5;
+        }
+
+        .checklist li.done {
+            color: #1b2235;
+        }
+
+            .checklist li.done::before {
+                content: "✓";
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #1e7a3a;
+                color: white;
+                font-size: 0.65rem;
+            }
+
+/* ===== Abbrechen-Button ===== */
+.btn-cancel {
+    display: block;
+    padding: 10px;
+    border: 1px solid #d5dbe5;
+    border-radius: 8px;
+    color: #1b2235;
+    text-align: center;
+    text-decoration: none;
+}
+
+/* × oben rechts auf dem Foto */
+.photo-delete-form {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+}
+
+.photo-delete {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(27, 34, 53, 0.75);
+    color: white;
+    line-height: 1;
+}
+
+    .photo-delete:hover {
+        background-color: #c0392b;
+    }
+
+/* "Entfernen" bei PDFs */
+.btn-delete-small {
+    padding: 6px 12px;
+    border: 1px solid #e3c4c4;
+    border-radius: 6px;
+    background-color: white;
+    color: #c0392b;
+    font-size: 0.85rem;
+}
+
+    .btn-delete-small:hover {
+        background-color: #c0392b;
+        color: white;
+    }
