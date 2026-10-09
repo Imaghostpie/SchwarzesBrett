@@ -1,122 +1,126 @@
 ﻿@model SchwarzesBrett.ViewModels.IndexViewModel
+@using System.Globalization
 
-<div class="text-left">
-	<h1 class="display-5">Was willst du Bruder?</h1>
+@{
+    ViewData["Title"] = "Übersicht";
+    var icons = Model.Lookups.Categories.ToDictionary(c => c.Id, c => c.Icon);
+}
 
-	@* SUCHLEISTE *@
+<h1 class="home-title">Was möchtest du tun? Bruder</h1>
 
-	<div class="container">
+<!-- ================= Suche und Sortierung ================= -->
+<div class="d-flex gap-3 mb-4">
+    <div class="search-box flex-grow-1">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" class="form-control"
+               placeholder="Wonach suchst du? z. B. Fahrrad, Nachhilfe, Wohnung" />
+    </div>
 
-		<div class="row justify-content-center">
-			<div class="d-flex align-items-center gap-3">
-				<div class="search-container flex-grow-1 shadow">
-					<input type="text"
-						   class="form-control search-input"
-						   placeholder="Suche...">
-					<i class="fas fa-search search-icon"></i>
-				</div>
+    <select id="sortSelect" class="form-select sort-select">
+        <option value="newest">Neueste zuerst</option>
+        <option value="oldest">Älteste zuerst</option>
+        <option value="price-asc">Preis aufsteigend</option>
+        <option value="price-desc">Preis absteigend</option>
+    </select>
+</div>
 
-				@* Sortieren nach... Dropdown Menü *@
+<div class="row g-4">
 
+    <!-- ================= Kategorien links ================= -->
+    <div class="col-lg-3">
+        <small class="cat-heading">Kategorien</small>
 
-				<div class="dropdown shadow">
-					<button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-						Sortieren nach
-					</button>
-					<ul class="dropdown-menu">
-						<li><a class="dropdown-item" href="#">Datum aufsteigend</a></li>
-						<li><a class="dropdown-item" href="#">Datum absteigend</a></li>
-						<li><a class="dropdown-item" href="#">Preis aufsteigend</a></li>
-						<li><a class="dropdown-item" href="#">Preis absteigend</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="cat-list">
+            <button type="button" class="cat-item active" data-category="all">
+                <i class="bi bi-grid-fill"></i>
+                <span class="flex-grow-1">Alle Kategorien</span>
+                <span class="cat-count">@Model.Tiles.Count()</span>
+            </button>
 
+            @foreach (var category in Model.Lookups.Categories)
+            {
+                <button type="button" class="cat-item" data-category="@category.Id">
+                    <i class="bi @category.Icon"></i>
+                    <span class="flex-grow-1">@category.Name</span>
+                    <span class="cat-count">@Model.Tiles.Count(t => t.CategoryID == category.Id)</span>
+                </button>
+            }
+        </div>
+    </div>
 
-	@* Kategorien Leiste *@
+    <!-- ================= Inserate rechts ================= -->
+    <div class="col-lg-9">
+        <div class="listings-box">
 
-	<div class="container-sm bg-transparent mt-5">
-		<div class="row">
-			<div class="col-3 ">
-				<div class="btn-group CatList shadow d-flex flex-column" role="catgroup">
-					<input type="radio" class="btn-check btn-outline-primary" name="category" id="alle" checked />
-					<label class="btn  CategoryItem" for="alle">
-						Alle Kategorien
-						<i class="bi bi-grid-fill me-2"></i>
-						<span class="ListingCount">@Model.Tiles.Count();</span>
-					</label>
-					@foreach (Category category in Model.Lookups.Categories)
-					{
-						<input type="radio" class="btn-check btn-outline-primary" name="category" id="@category.Name" />
-						<label class="btn CategoryItem" for="@category.Name">
-							@category.Name
-							<i class="bi bi-car-front-fill me-2"></i>
-							<span class="ListingCount">@Model.Tiles.Where(t => t.Id == category.Id).Count();</span>
-						</label>
-					}
-					
-				</div>
-			</div>
+            <!-- Umschalter Angebote / Gesuche -->
+            <div class="type-switch">
+                <button type="button" class="type-btn active" data-type="all">
+                    <i class="bi bi-grid-3x3-gap"></i> Alles
+                </button>
+                <button type="button" class="type-btn" data-type="1">
+                    <i class="bi bi-box-seam"></i> Angebote
+                </button>
+                <button type="button" class="type-btn" data-type="2">
+                    <i class="bi bi-search"></i> Gesuche
+                </button>
+            </div>
 
-			@* Box für alle Listings *@
+            <h4 class="listings-count">
+                <span id="resultCount">@Model.Tiles.Count()</span> <span id="resultLabel">Inserate</span>
+            </h4>
 
-			<div class="col-8 ListingListBox">
+            <!-- Kacheln -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3" id="tileGrid">
+                @foreach (var tile in Model.Tiles)
+                {
+                    string imageUrl = tile.TitleImageId is int imgId
+                    ? Url.Action("Attachment", new { id = imgId })!
+                    : Url.Content($"~/Images/CategoryPlaceholders/Placeholder_{tile.CategoryID}.svg");
 
-				@* Switch für Angebote & Gesuche *@
+                    <div class="col tile-col"
+                         data-category="@tile.CategoryID"
+                         data-type="@tile.ListingTypeId"
+                         data-search="@(tile.Name + " " + tile.CategoryName).ToLower()"
+                         data-price="@(tile.Price?.ToString(CultureInfo.InvariantCulture) ?? "")"
+                         data-created="@tile.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")">
 
-				<div class="d-flex justify-content-center SwitchGroupBox">
+                        <a asp-action="Details" asp-route-id="@tile.Id" class="tile">
+                            <div class="tile-image">
+                                <img src="@imageUrl" alt="@tile.Name" />
+                                <span class="tile-icon">
+                                    <i class="bi @(icons.GetValueOrDefault(tile.CategoryID, "bi-three-dots"))"></i>
+                                </span>
+                            </div>
 
-					<div class="btn-group Switch shadow" role="group">
+                            <div class="tile-body">
+                                <div class="tile-title">@tile.Name</div>
 
-						<input type="radio" class="btn-check" name="type" id="alles" checked>
-						<label class="btn btn-outline-primary" for="alles">
-							<i class="bi bi-grid-3x3-gap me-2"></i>Alles
-						</label>
+                                <div class="tile-footer">
+                                    <div class="tile-price">
+                                        @if (tile.Price is decimal price)
+                                        {
+                                            @price.ToString("#,0.## €")
+                                            <small>@tile.PriceCategoryName</small>
+                                        }
+                                        else
+                                        {
+                                            @tile.PriceCategoryName
+                                        }
+                                    </div>
+                                    <div class="tile-meta">@tile.AgeText</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
 
-						<input type="radio" class="btn-check" name="type" id="angebote">
-						<label class="btn btn-outline-primary" for="angebote">
-							<i class="bi bi-box-seam me-2"></i>Angebote
-						</label>
+            <!-- Wird in Schritt 3 eingeblendet, wenn nichts passt -->
+            <p id="noResults" class="text-muted text-center py-5 d-none">
+                Keine Inserate gefunden.
+            </p>
 
-						<input type="radio" class="btn-check" name="type" id="gesuche">
-						<label class="btn btn-outline-primary" for="gesuche">
-							<i class="bi bi-search me-2"></i>Gesuche
-						</label>
-					</div>
-				</div>
+        </div>
+    </div>
 
-				<div class="p-2 pt-3">
-					<P class="fs-5">XX Angebote</P>
-				</div>
-
-
-
-				@* Kachel für einzelnes Angebot *@
-
-
-				<div class="row">
-					@foreach (ListingTile tile in Model.Tiles)
-					{
-						<div class="col ListingBox p-0 mx-2 shadow">
-							<div class="row ListingImageRow">
-								<img src="@Url.Action("Attachment", new {id = tile.TitleImageId })" class="img-fluid" alt="placeholderimage">
-							</div>
-							<div class="d-flex rounded ListingIconBox">
-								<i class="bi bi-house-fill ListingIcon"></i>
-							</div>
-							<div class="row p-2">
-								<p class="fs-4 ListingTitle">@tile.Name</p>
-								<p class="fs-4 Price mb-0">@tile.Price</p>
-								<div class="d-flex ListingDateBox justify-content-end">
-									<p>@tile.AgeText</p>
-								</div>
-							</div>
-						</div>
-					}									
-				</div>
-			</div>
-		</div>
-	</div>
 </div>

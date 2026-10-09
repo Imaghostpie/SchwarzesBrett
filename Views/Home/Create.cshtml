@@ -16,6 +16,7 @@
 
 <!-- ================= Formular ================= -->
 <form asp-controller="Home" asp-action="Create" method="post" enctype="multipart/form-data">
+	<input type="hidden" id="titleImageIndex" name="Listing.TitleImageIndex" value="0" />
 	<div class="row g-4">
 
 		<!-- ===== Linke Spalte: Eingaben ===== -->
@@ -267,12 +268,15 @@
 		});
 		togglePrice();
 
-		// Fotos: Vorschaubilder anzeigen
-		document.getElementById('photoInput').addEventListener('change', function () {
-			const preview = document.getElementById('photoPreview');
-			preview.innerHTML = '';   // alte Vorschau leeren
+				// ===== Fotos: Vorschaubilder mit Stern =====
+		const titleInput = document.getElementById('titleImageIndex');
 
-			Array.from(this.files).forEach(function (file, index) {
+		function renderPhotoPreview() {
+			const files = document.getElementById('photoInput').files;
+			const preview = document.getElementById('photoPreview');
+			preview.innerHTML = '';
+
+			Array.from(files).forEach(function (file, index) {
 				const div = document.createElement('div');
 				div.className = 'photo-thumb';
 
@@ -280,15 +284,32 @@
 				img.src = URL.createObjectURL(file);
 				div.appendChild(img);
 
-				if (index === 0) {
+				if (index === Number(titleInput.value)) {
 					const badge = document.createElement('span');
 					badge.className = 'title-badge';
 					badge.textContent = 'Titelbild';
 					div.appendChild(badge);
+				} else {
+					const star = document.createElement('button');
+					star.type = 'button';
+					star.className = 'photo-star';
+					star.title = 'Als Titelbild festlegen';
+					star.innerHTML = '<i class="bi bi-star"></i>';
+					star.addEventListener('click', function () {
+						titleInput.value = index;
+						renderPhotoPreview();
+						updatePreview();
+					});
+					div.appendChild(star);
 				}
 
 				preview.appendChild(div);
 			});
+		}
+
+		document.getElementById('photoInput').addEventListener('change', function () {
+			titleInput.value = 0;   // neue Auswahl: erstes Foto ist wieder Titelbild
+			renderPhotoPreview();
 		});
 
 		// PDFs: Dateinamen auflisten
@@ -348,15 +369,15 @@
 			const hasPhoto = photos.length > 0;
 
 			if (hasPhoto) {
-				previewImg.src = URL.createObjectURL(photos[0]);
+			previewImg.src = URL.createObjectURL(photos[Number(titleInput.value)] || photos[0]);
 			}
 			previewImg.classList.toggle('d-none', !hasPhoto);
 			document.getElementById('previewNoImg').classList.toggle('d-none', hasPhoto);
 			setDone('photos', hasPhoto);
-		}
+			}
 
-		form.addEventListener('input', updatePreview);
-		form.addEventListener('change', updatePreview);
-		updatePreview();
+			form.addEventListener('input', updatePreview);
+			form.addEventListener('change', updatePreview);
+			updatePreview();
 	</script>
 }

@@ -5,6 +5,7 @@
 
     var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
     var pdfs = Model.Attachments.Where(a => a.FileType == "application/pdf").ToList();
+    int? titleId = images.FirstOrDefault(x => x.IsTitle)?.Id ?? images.FirstOrDefault()?.Id;
 }
 
 <!-- ================= Kopfzeile ================= -->
@@ -140,20 +141,31 @@
             </small>
 
             <div class="d-flex flex-wrap gap-2">
-                @for (int i = 0; i < images.Count; i++)
+                @foreach (var image in images)
                 {
                     <div class="photo-thumb">
-                        <img src="@Url.Action("Attachment", new { id = images[i].Id })" />
+                        <img src="@Url.Action("Attachment", new { id = image.Id })" />
 
-                        @if (i == 0)
+                        @if (image.Id == titleId)
                         {
                             <span class="title-badge">Titelbild</span>
                         }
+                        else
+                        {
+                            <form asp-action="AttachmentSetTitle" asp-route-id="@image.Id" method="post" class="photo-star-form">
+                                <input type="hidden" name="listingId" value="@Model.Listing.Id" />
+                                <button type="submit" class="photo-star" title="Als Titelbild festlegen">
+                                    <i class="bi bi-star"></i>
+                                </button>
+                            </form>
+                        }
 
-                        <form asp-action="AttachmentDelete" asp-route-id="@images[i].Id" method="post" class="photo-delete-form">
+                        <form asp-action="AttachmentDelete" asp-route-id="@image.Id" method="post" class="photo-delete-form">
                             <input type="hidden" name="listingId" value="@Model.Listing.Id" />
                             <button type="submit" class="photo-delete" title="Entfernen"
-                                    onclick="return confirm('Bild wirklich entfernen?')">×</button>
+                                    onclick="return confirm('Bild wirklich entfernen?')">
+                                ×
+                            </button>
                         </form>
                     </div>
                 }

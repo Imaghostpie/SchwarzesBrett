@@ -11,5 +11,6 @@
         public string? ContactPhone { get; set; }
         public string ContactMail { get; set; } = null!;
         public List<IFormFile> Attachments { get; set; } = new();
+        public int TitleImageIndex { get; set; }
     }
 }

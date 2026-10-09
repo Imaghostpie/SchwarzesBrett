@@ -6,11 +6,17 @@ namespace SchwarzesBrett.Models
         public required int Id { get; set; }
         public required string Name { get; set; }
         public decimal? Price { get; set; }
-        public required string StatusName { get; set; }
+        public string? StatusName { get; set; }
         public required string CategoryName { get; set; }
+        public required int CategoryID { get; set; }
         public required string PriceCategoryName { get; set; }
         public required string ListingTypeName { get; set; }
+        public required int ListingTypeId { get; set; }
         public int? TitleImageId { get; set; }
+        public int StatusId { get; set; }
+        public DateTime ValidUntil { get; set; }
+
+        public int DaysLeft => (ValidUntil.Date - DateTime.Today).Days;
         public required DateTime CreatedAt { get; set; }
         public string AgeText {
             get
@@ -33,6 +39,8 @@ namespace SchwarzesBrett.Models
                 return years == 1 ? "vor 1 Jahr" : $"vor {years} Jahren";
             }
         }
+
+
 
 
     }

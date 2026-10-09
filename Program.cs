@@ -22,6 +22,7 @@ namespace SchwarzesBrett
             {
                 options.FallbackPolicy = options.DefaultPolicy;
             });
+            builder.Services.AddHttpContextAccessor();
 
 
 
@@ -39,7 +40,7 @@ namespace SchwarzesBrett
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

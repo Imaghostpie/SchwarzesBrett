@@ -12,7 +12,10 @@
 
 			@if (images.Count == 0)
 			{
-				<div class="gallery-empty">Keine Bilder vorhanden</div>
+				<div class="gallery-frame">
+					<img src="@Url.Content($"~/Images/CategoryPlaceholders/Placeholder_{Model.Category.Id}.svg")"
+						 class="gallery-image gallery-placeholder" alt="@Model.Category.Name" />
+				</div>
 			}
 			else
 			{
@@ -21,12 +24,13 @@
 					<div class="carousel-inner">
 						@for (int i = 0; i < images.Count; i++)
 						{
+							string url = Url.Action("Attachment", new { id = images[i].Id })!;
+
 							<div class="carousel-item @(i == 0 ? "active" : "")">
-								<img src="@Url.Action("Attachment", new { id = images[i].Id })"
-									 class="d-block gallery-image"
-									 data-bs-toggle="modal"
-									 data-bs-target="#imageModal"
-									 style="cursor: zoom-in;" />
+								<div class="gallery-frame" style="--bg: url('@url')">
+									<img src="@url" class="gallery-image"
+										 data-bs-toggle="modal" data-bs-target="#imageModal" />
+								</div>
 							</div>
 						}
 					</div>
@@ -110,9 +114,18 @@
 
 				@if (isOwner)
 				{
-					<a asp-action="Edit" asp-route-id="@Model.Id" class="btn-icon" title="Bearbeiten">
-						<i class="bi bi-pencil"></i>
-					</a>
+					<div class="d-flex gap-2">
+						<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary" title="Bearbeiten">
+							<i class="bi bi-pencil"></i>
+						</a>
+
+						<form asp-action="Delete" asp-route-id="@Model.Id" method="post"
+							  onsubmit="return confirm('Inserat wirklich löschen?')">
+							<button type="submit" class="btn btn-sm btn-outline-danger" title="Löschen">
+								<i class="bi bi-trash"></i>
+							</button>
+						</form>
+					</div>
 				}
 			</div>
 
@@ -200,7 +213,7 @@
 
 @section Scripts {
 	<script>
-		// ===== Galerie: Vorschaubild + Zähler beim Blättern =====
+		// ===== Galerie: Vorschaubild und Zähler beim Blättern =====
 		const gallery = document.getElementById('gallery');
 
 		if (gallery) {

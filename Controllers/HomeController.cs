@@ -241,6 +241,21 @@ namespace SchwarzesBrett.Controllers
             return RedirectToAction("Edit", new { id = listingId });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AttachmentSetTitle(int id, int listingId)
+        {
+            try
+            {
+                await connection.AttachmentSetTitle(id);
+                TempData["Success"] = "Titelbild geändert.";
+            }
+            catch (SqlException ex) when (ex.Number >= 50000)
+            {
+                TempData["Error"] = ex.Message;
+            }
+            return RedirectToAction(nameof(Edit), new { id = listingId });
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -248,49 +263,6 @@ namespace SchwarzesBrett.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        ///////////////////////////// Nur zum Testen \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-        [HttpGet]
-        public IActionResult TestUpload()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [RequestSizeLimit(60 * 1024 * 1024)]
-        public async Task<IActionResult> TestUpload(int listingId, List<IFormFile> files)
-        {
-            try
-            {
-                foreach (var file in files)
-                    await connection.AttachmentAdd(listingId, file);
-
-                return RedirectToAction(nameof(Details), new { id = listingId });
-            }
-            catch (SqlException ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(TestUpload));
-            }
-        }
+ 
     }
 }

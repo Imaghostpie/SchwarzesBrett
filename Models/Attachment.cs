@@ -17,5 +17,6 @@
                 return $"{FileSize / 1024.0:0} KB";
             }
         }
+        public bool IsTitle { get; set; }
     }
 }
