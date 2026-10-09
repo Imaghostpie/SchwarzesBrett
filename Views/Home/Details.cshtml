@@ -1,233 +1,228 @@
 ﻿@model Listing
 
 @{
-    var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
-    var pdfs = Model.Attachments.Where(a => a.FileType == "application/pdf").ToList();
+	var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
+	var pdfs = Model.Attachments.Where(a => a.FileType == "application/pdf").ToList();
+	bool isOwner = string.Equals(Model.CreatedBy, User.Identity?.Name, StringComparison.OrdinalIgnoreCase);
 }
 
 <div class="row g-4">
-    <div class="col-lg-8">
-        <div class="defaultdiv">
+	<div class="col-lg-8">
+		<div class="defaultdiv">
 
-            @if (images.Count == 0)
-            {
-                <div class="gallery-empty">Keine Bilder vorhanden</div>
-            }
-            else
-            {
-                <div id="gallery" class="carousel slide" data-bs-interval="false">
+			@if (images.Count == 0)
+			{
+				<div class="gallery-empty">Keine Bilder vorhanden</div>
+			}
+			else
+			{
+				<div id="gallery" class="carousel slide" data-bs-interval="false">
 
-                    <div class="carousel-inner">
-                        @for (int i = 0; i < images.Count; i++)
-                        {
-                            <div class="carousel-item @(i == 0 ? "active" : "")">
-                                <img src="@Url.Action("Attachment", new { id = images[i].Id })"
-                                     class="d-block gallery-image"
-                                     data-bs-toggle="modal"
-                                    data-bs-target="#imageModal"
-                                    style="cursor: zoom-in;"/>
-                            </div>
-                        }
-                    </div>
+					<div class="carousel-inner">
+						@for (int i = 0; i < images.Count; i++)
+						{
+							<div class="carousel-item @(i == 0 ? "active" : "")">
+								<img src="@Url.Action("Attachment", new { id = images[i].Id })"
+									 class="d-block gallery-image"
+									 data-bs-toggle="modal"
+									 data-bs-target="#imageModal"
+									 style="cursor: zoom-in;" />
+							</div>
+						}
+					</div>
 
-                    @if (images.Count > 1)
-                    {
-                        <button class="carousel-control-prev" type="button"
-                                data-bs-target="#gallery" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button"
-                                data-bs-target="#gallery" data-bs-slide="next">
-                            <span class="carousel-control-next-icon"></span>
-                        </button>
-                        <span class="gallery-counter">
-                            <span id="currentIndex">1</span> / @images.Count
-                        </span>
-                    }
-                </div>
+					@if (images.Count > 1)
+					{
+						<button class="carousel-control-prev" type="button"
+								data-bs-target="#gallery" data-bs-slide="prev">
+							<span class="carousel-control-prev-icon"></span>
+						</button>
+						<button class="carousel-control-next" type="button"
+								data-bs-target="#gallery" data-bs-slide="next">
+							<span class="carousel-control-next-icon"></span>
+						</button>
+						<span class="gallery-counter">
+							<span id="currentIndex">1</span> / @images.Count
+						</span>
+					}
+				</div>
 
-                @if (images.Count > 1)
-                {
-                    <div class="gallery-tiles">
-                        @for (int i = 0; i < images.Count; i++)
-                        {
-                            <button type="button" class="gallery-tile @(i == 0 ? "active" : "")"
-                                    data-bs-target="#gallery" data-bs-slide-to="@i">
-                                <img src="@Url.Action("Attachment", new { id = images[i].Id })" />
-                            </button>
-                        }
-                    </div>
-                }
-            }
+				@if (images.Count > 1)
+				{
+					<div class="gallery-tiles">
+						@for (int i = 0; i < images.Count; i++)
+						{
+							<button type="button" class="gallery-tile @(i == 0 ? "active" : "")"
+									data-bs-target="#gallery" data-bs-slide-to="@i">
+								<img src="@Url.Action("Attachment", new { id = images[i].Id })" />
+							</button>
+						}
+					</div>
+				}
+			}
 
-        </div>
+		</div>
 
-        <!-- Beschreibung -->
-        <div class="defaultdiv p-4 mt-3">
-            <h5 class="card-heading">Beschreibung</h5>
-            <p class="description mb-0">@Model.Description</p>
-        </div>
+		<!-- Beschreibung -->
+		<div class="defaultdiv p-4 mt-3">
+			<h5 class="card-heading">Beschreibung</h5>
+			<p class="description mb-0">@Model.Description</p>
+		</div>
 
-        <!-- Anhänge (nur wenn PDFs vorhanden) -->
-        @if (pdfs.Count > 0)
-        {
-            <div class="defaultdiv p-4 mt-3">
-                <h5 class="card-heading">
-                    Anhänge <span class="text-muted fw-normal">(@pdfs.Count)</span>
-                </h5>
+		<!-- Anhänge (nur wenn PDFs vorhanden) -->
+		@if (pdfs.Count > 0)
+		{
+			<div class="defaultdiv p-4 mt-3">
+				<h5 class="card-heading">
+					Anhänge <span class="text-muted fw-normal">(@pdfs.Count)</span>
+				</h5>
 
-                @foreach (var pdf in pdfs)
-                {
-                    <div class="attachment-row">
-                        <div class="attachment-icon">PDF</div>
+				@foreach (var pdf in pdfs)
+				{
+					<div class="attachment-row">
+						<div class="attachment-icon">PDF</div>
 
-                        <div class="flex-grow-1">
-                            <div class="fw-medium">@(pdf.FileName ?? $"Anhang-{pdf.Id}.pdf")</div>
-                            <small class="text-muted">@pdf.FileSizeText</small>
-                        </div>
+						<div class="flex-grow-1">
+							<div class="fw-medium">@(pdf.FileName ?? $"Anhang-{pdf.Id}.pdf")</div>
+							<small class="text-muted">@pdf.FileSizeText</small>
+						</div>
 
-                        <a href="@Url.Action("Attachment", new { id = pdf.Id })" class="btn-download">
-                            ↓ Herunterladen
-                        </a>
-                    </div>
-                }
-            </div>
-        }
+						<a href="@Url.Action("Attachment", new { id = pdf.Id })" class="btn-download">
+							↓ Herunterladen
+						</a>
+					</div>
+				}
+			</div>
+		}
 
-            </div>
+	</div>
 
-    <div class="col-lg-4">
-         <div class="defaultdiv p-4">
+	<div class="col-lg-4">
 
-            <!-- Badges -->
-            <div class="d-flex gap-2 mb-3">
-                <span class="badge-type">@Model.ListingType.Name</span>
-                <span class="badge-status status-@Model.Status.Id">● @Model.Status.Name</span>
-            </div>
+		<!-- Karte 1: Badges, Titel, Preis, Kontakt -->
+		<div class="defaultdiv p-4">
 
-            <!-- Titel -->
-            <h1 class="listing-title">@Model.Name</h1>
+			<div class="d-flex justify-content-between align-items-start mb-3">
+				<div class="d-flex gap-2">
+					<span class="badge-type">@Model.ListingType.Name</span>
+					<span class="badge-status status-@Model.Status.Id">● @Model.Status.Name</span>
+				</div>
 
-            <hr />
+				@if (isOwner)
+				{
+					<a asp-action="Edit" asp-route-id="@Model.Id" class="btn-icon" title="Bearbeiten">
+						<i class="bi bi-pencil"></i>
+					</a>
+				}
+			</div>
 
-            <!-- Preis -->
-            <div class="d-flex align-items-center gap-2">
-                @if (Model.Price != null)
-                {
-                    <span class="listing-price">@Model.Price.Value.ToString("#,0.## €")</span>
-                    <span class="price-pill">@Model.PriceCategory.Name</span>
-                }
-                else
-                {
-                    <span class="listing-price">@Model.PriceCategory.Name</span>
-                }
+			<h1 class="listing-title">@Model.Name</h1>
 
-                <!-- Button: sichtbar, bis man draufklickt -->
-                <button type="button" id="showContactBtn" class="btn-contact mt-3">
-                    Kontakt anzeigen
-                </button>
+			<hr />
 
-                <!-- Kontaktdaten: erst versteckt -->
-                <div id="contactInfo" class="d-none mt-3">
-                    <a href="mailto:@Model.ContactMail" class="contact-tile contact-tile-primary">
-                        <small>E-Mail</small>
-                        <strong>@Model.ContactMail</strong>
-                    </a>
+			<div class="d-flex align-items-center gap-2">
+				@if (Model.Price != null)
+				{
+					<span class="listing-price">@Model.Price.Value.ToString("#,0.## €")</span>
+					<span class="price-pill">@Model.PriceCategory.Name</span>
+				}
+				else
+				{
+					<span class="listing-price">@Model.PriceCategory.Name</span>
+				}
+			</div>
 
-                    @if (!string.IsNullOrEmpty(Model.ContactPhone))
-                    {
-                        <a href="tel:@Model.ContactPhone" class="contact-tile">
-                            <small>Telefon</small>
-                            <strong>@Model.ContactPhone</strong>
-                        </a>
-                    }
-            </div>
+			<button type="button" id="showContactBtn" class="btn-contact mt-3">
+				Kontakt anzeigen
+			</button>
 
-            <div class="defaultdiv p-3 mt-3 d-flex align-items-center gap-3">
-                <div class="avatar">@Model.CreatorInitials</div>
-                <div>
-                    <small class="text-muted d-block">Inseriert von</small>
-                    <strong>@Model.CreatorName</strong>
-                </div>
-            </div>
+			<div id="contactInfo" class="d-none mt-3">
+				<a href="mailto:@Model.ContactMail" class="contact-tile contact-tile-primary">
+					<small>E-Mail</small>
+					<strong>@Model.ContactMail</strong>
+				</a>
 
-            <div class="defaultdiv p-4 mt-3">
-                <dl class="facts mb-0">
-                    <div>
-                        <dt>Typ</dt>
-                        <dd>@Model.ListingType.Name</dd>
-                    </div>
-                    <div>
-                        <dt>Kategorie</dt>
-                        <dd>@Model.Category.Name</dd>
-                    </div>
-                    <div>
-                        <dt>Preiskategorie</dt>
-                        <dd>@Model.PriceCategory.Name</dd>
-                    </div>
-                    <div>
-                        <dt>Status</dt>
-                        <dd>@Model.Status.Name</dd>
-                    </div>
-                    <div>
-                        <dt>Erstellt am</dt>
-                        <dd>@Model.CreatedAt.ToString("dd.MM.yyyy")</dd>
-                    </div>
-                    <div>
-                        <dt>Gültig bis</dt>
-                        <dd>
-                            @Model.ValidUntil.ToString("dd.MM.yyyy")
-                            @if (Model.DaysLeft >= 0)
-                            {
-                                <span>(noch @Model.DaysLeft @(Model.DaysLeft == 1 ? "Tag" : "Tage"))</span>
-                            }
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>Inserat-Nr.</dt>
-                        <dd>@Model.Id</dd>
-                    </div>
-                </dl>
-</div>
-        </div>
-    </div>
-</div>
+				@if (!string.IsNullOrEmpty(Model.ContactPhone))
+				{
+					<a href="tel:@Model.ContactPhone" class="contact-tile">
+						<small>Telefon</small>
+						<strong>@Model.ContactPhone</strong>
+					</a>
+				}
+			</div>
+
+		</div>
+
+		<!-- Karte 2: Inseriert von -->
+		<div class="defaultdiv p-3 mt-3 d-flex align-items-center gap-3">
+			<div class="avatar">@Model.CreatorInitials</div>
+			<div style="line-height: 1.1;">
+				<small class="text-muted d-block">Inseriert von</small>
+				<strong>@Model.CreatorName</strong>
+			</div>
+		</div>
+
+		<!-- Karte 3: Eckdaten -->
+		<div class="defaultdiv p-4 mt-3">
+			<dl class="facts mb-0">
+				<div><dt>Typ</dt><dd>@Model.ListingType.Name</dd></div>
+				<div><dt>Kategorie</dt><dd>@Model.Category.Name</dd></div>
+				<div><dt>Preiskategorie</dt><dd>@Model.PriceCategory.Name</dd></div>
+				<div><dt>Status</dt><dd>@Model.Status.Name</dd></div>
+				<div><dt>Erstellt am</dt><dd>@Model.CreatedAt.ToString("dd.MM.yyyy")</dd></div>
+				<div>
+					<dt>Gültig bis</dt>
+					<dd>
+						@Model.ValidUntil.ToString("dd.MM.yyyy")
+						@if (Model.DaysLeft >= 0)
+						{
+							<span>(noch @Model.DaysLeft @(Model.DaysLeft == 1 ? "Tag" : "Tage"))</span>
+						}
+					</dd>
+				</div>
+			</dl>
+		</div>
+
+	</div>   <!-- Ende col-lg-4 -->
+
+</div>   <!-- Ende row -->
 
 <div class="modal fade" id="imageModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content bg-dark border-0">
-            <div class="modal-header border-0">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center p-0 pb-3">
-                <img id="modalImage" src="" class="img-fluid" style="max-height: 80vh" />
-            </div>
-        </div>
-    </div>
+	<div class="modal-dialog modal-xl modal-dialog-centered">
+		<div class="modal-content bg-transparent border-0">
+			<button type="button" class="btn-close btn-close-white modal-close" data-bs-dismiss="modal"></button>
+			<div class="modal-body p-0 d-flex justify-content-center">
+				<img id="modalImage" src="" class="img-fluid d-block rounded" style="max-height: 85vh" />
+			</div>
+		</div>
+	</div>
 </div>
 
 @section Scripts {
-    <script>
-        const gallery = document.getElementById('gallery');
+	<script>
+		// ===== Galerie: Vorschaubild + Zähler beim Blättern =====
+		const gallery = document.getElementById('gallery');
 
-        if (gallery) {
-            gallery.addEventListener('slide.bs.carousel', function (e) {
-                const tiles = document.querySelectorAll('.gallery-tile');
+		if (gallery) {
+			gallery.addEventListener('slide.bs.carousel', function (e) {
+				document.querySelectorAll('.gallery-tile').forEach(function (tile, index) {
+					tile.classList.toggle('active', index === e.to);
+				});
 
-                tiles.forEach(function (tile, index) {
-                    tile.classList.toggle('active', index === e.to);
+				const counter = document.getElementById('currentIndex');
+				if (counter) counter.textContent = e.to + 1;
+			});
+		}
 
-                    document.getElementById('imageModal').addEventListener('show.bs.modal', function (e) {
-                    document.getElementById('modalImage').src = e.relatedTarget.src;
-                });
+		// ===== Großansicht =====
+		document.getElementById('imageModal').addEventListener('show.bs.modal', function (e) {
+			document.getElementById('modalImage').src = e.relatedTarget.src;
+		});
 
-                document.getElementById('currentIndex').textContent = e.to + 1;
-            });
-        }
-
-        document.getElementById('showContactBtn').addEventListener('click', function () {
-            this.classList.add('d-none');                                       // Button verstecken
-            document.getElementById('contactInfo').classList.remove('d-none');  // Kontakt zeigen
-});
-    </script>
+		// ===== Kontakt anzeigen =====
+		document.getElementById('showContactBtn').addEventListener('click', function () {
+			this.classList.add('d-none');
+			document.getElementById('contactInfo').classList.remove('d-none');
+		});
+	</script>
 }

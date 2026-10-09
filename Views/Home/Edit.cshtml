@@ -10,10 +10,6 @@
 <!-- ================= Kopfzeile ================= -->
 <div class="page-header">
     <a asp-action="Details" asp-route-id="@Model.Listing.Id" class="btn-back">‹ Abbrechen</a>
-    <div>
-        <h1 class="page-title">Inserat bearbeiten</h1>
-        <small class="text-muted">Inserat Nr. @Model.Listing.Id</small>
-    </div>
 </div>
 
 @if (Model.ErrorMessage != null)

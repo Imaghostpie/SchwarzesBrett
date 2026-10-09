@@ -13,7 +13,13 @@ namespace SchwarzesBrett.Controllers
         public async Task<IActionResult> Index()
         {
             List<ListingTile> tiles = await connection.ListingsGet();
-            return View(tiles);
+            ListingLookups lookups = await connection.LookupsGetAll();
+            IndexViewModel viewmodel = new IndexViewModel
+            {
+                Tiles = tiles,
+                Lookups = lookups
+            };
+            return View(viewmodel);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -217,7 +223,7 @@ namespace SchwarzesBrett.Controllers
             {
                 TempData["Error"] = ex.Message;
             }
-            return RedirectToAction("Edit", listingId);
+            return RedirectToAction("Edit", new { id = listingId });
         }
 
         [HttpPost]
@@ -232,7 +238,7 @@ namespace SchwarzesBrett.Controllers
             {
                 TempData["Error"] = ex.Message;
             }
-            return RedirectToAction("Edit", listingId);
+            return RedirectToAction("Edit", new { id = listingId });
         }
 
 

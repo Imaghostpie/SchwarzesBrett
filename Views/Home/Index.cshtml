@@ -1,21 +1,25 @@
-﻿@{
-	ViewData["Title"] = "Home Page";
-}
+﻿@model SchwarzesBrett.ViewModels.IndexViewModel
 
 <div class="text-left">
-	<h1 class="display-4">Was willst du Bruder?</h1>
-	<div class="container">
+	<h1 class="display-5">Was willst du Bruder?</h1>
 
+	@* SUCHLEISTE *@
+
+	<div class="container">
 
 		<div class="row justify-content-center">
 			<div class="d-flex align-items-center gap-3">
-				<div class="search-container flex-grow-1">
+				<div class="search-container flex-grow-1 shadow">
 					<input type="text"
 						   class="form-control search-input"
 						   placeholder="Suche...">
 					<i class="fas fa-search search-icon"></i>
 				</div>
-				<div class="dropdown">
+
+				@* Sortieren nach... Dropdown Menü *@
+
+
+				<div class="dropdown shadow">
 					<button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 						Sortieren nach
 					</button>
@@ -30,40 +34,87 @@
 		</div>
 	</div>
 
-	<div class="container-sm mt-5">
-		<div class="row">
-			<div class="col-3">
-				<div class="list-group">
 
-					<a href="#" class="list-group-item list-group-item-action"><span><i class="bi bi-grid-fill me-2"></i></span>alle Kategorien</a>
-					<a href="#" class="list-group-item list-group-item-action"><span><i class="bi bi-car-front-fill me-2"></i></span>Kategorie1</a>
-					<a href="#" class="list-group-item list-group-item-action">Kategorie2</a>
-					<a href="#" class="list-group-item list-group-item-action">Kategorie3</a>
-					<a href="#" class="list-group-item list-group-item-action">Kategorie4</a>
+	@* Kategorien Leiste *@
+
+	<div class="container-sm bg-transparent mt-5">
+		<div class="row">
+			<div class="col-3 ">
+				<div class="btn-group CatList shadow d-flex flex-column" role="catgroup">
+					<input type="radio" class="btn-check btn-outline-primary" name="category" id="alle" checked />
+					<label class="btn  CategoryItem" for="alle">
+						Alle Kategorien
+						<i class="bi bi-grid-fill me-2"></i>
+						<span class="ListingCount">@Model.Tiles.Count();</span>
+					</label>
+					@foreach (Category category in Model.Lookups.Categories)
+					{
+						<input type="radio" class="btn-check btn-outline-primary" name="category" id="@category.Name" />
+						<label class="btn CategoryItem" for="@category.Name">
+							@category.Name
+							<i class="bi bi-car-front-fill me-2"></i>
+							<span class="ListingCount">@Model.Tiles.Where(t => t.Id == category.Id).Count();</span>
+						</label>
+					}
+					
 				</div>
 			</div>
-			<div class="col-8">
+
+			@* Box für alle Listings *@
+
+			<div class="col-8 ListingListBox">
+
+				@* Switch für Angebote & Gesuche *@
+
+				<div class="d-flex justify-content-center SwitchGroupBox">
+
+					<div class="btn-group Switch shadow" role="group">
+
+						<input type="radio" class="btn-check" name="type" id="alles" checked>
+						<label class="btn btn-outline-primary" for="alles">
+							<i class="bi bi-grid-3x3-gap me-2"></i>Alles
+						</label>
+
+						<input type="radio" class="btn-check" name="type" id="angebote">
+						<label class="btn btn-outline-primary" for="angebote">
+							<i class="bi bi-box-seam me-2"></i>Angebote
+						</label>
+
+						<input type="radio" class="btn-check" name="type" id="gesuche">
+						<label class="btn btn-outline-primary" for="gesuche">
+							<i class="bi bi-search me-2"></i>Gesuche
+						</label>
+					</div>
+				</div>
+
+				<div class="p-2 pt-3">
+					<P class="fs-5">XX Angebote</P>
+				</div>
+
+
+
+				@* Kachel für einzelnes Angebot *@
+
+
 				<div class="row">
-					<div class="col ListingBox">
-						<div class="row">
-							<img src="~/Images/Sample.jpg" class="img-fluid" alt="placeholderimage">
-							<div class="d-flex rounded ListingIconBox bg-primary">
+					@foreach (ListingTile tile in Model.Tiles)
+					{
+						<div class="col ListingBox p-0 mx-2 shadow">
+							<div class="row ListingImageRow">
+								<img src="@Url.Action("Attachment", new {id = tile.TitleImageId })" class="img-fluid" alt="placeholderimage">
+							</div>
+							<div class="d-flex rounded ListingIconBox">
 								<i class="bi bi-house-fill ListingIcon"></i>
 							</div>
-						</div>
-						<div class="row">
-							<div class="ListingTitle">
-								<p class="fs-4">Angebotstitel</p>
+							<div class="row p-2">
+								<p class="fs-4 ListingTitle">@tile.Name</p>
+								<p class="fs-4 Price mb-0">@tile.Price</p>
+								<div class="d-flex ListingDateBox justify-content-end">
+									<p>@tile.AgeText</p>
+								</div>
 							</div>
-							<div>
-								<p class="fs-3 price">€€€,€€</p>
-							</div>
 						</div>
-					</div>
-					<div class="col">
-					</div>
-					<div class="col">
-					</div>
+					}									
 				</div>
 			</div>
 		</div>

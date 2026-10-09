@@ -1,365 +1,362 @@
 ﻿@model SchwarzesBrett.ViewModels.CreateViewModel
 
 @{
-    ViewData["Title"] = "Neues Inserat";
+	ViewData["Title"] = "Neues Inserat";
 }
 
 <!-- ================= Kopfzeile ================= -->
 <div class="page-header">
-    <a asp-action="Index" class="btn-back">‹ Abbrechen</a>   
+	<a asp-action="Index" class="btn-back">‹ Abbrechen</a>
 </div>
 
 @if (Model.ErrorMessage != null)
 {
-    <div class="alert alert-danger">@Model.ErrorMessage</div>
+	<div class="alert alert-danger">@Model.ErrorMessage</div>
 }
 
 <!-- ================= Formular ================= -->
 <form asp-controller="Home" asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="row g-4">
+	<div class="row g-4">
 
-        <!-- ===== Linke Spalte: Eingaben ===== -->
-        <div class="col-lg-8">
+		<!-- ===== Linke Spalte: Eingaben ===== -->
+		<div class="col-lg-8">
 
-            <!-- 1. Art des Inserats -->
-            <div class="defaultdiv p-4 mb-3">
-                <h5 class="section-heading">
-                    <span class="section-number">1</span> Art des Inserats
-                </h5>
+			<!-- 1. Art des Inserats -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading">
+					<span class="section-number">1</span> Art des Inserats
+				</h5>
 
-                <div class="row g-3 mb-4">
-                    @foreach (var type in Model.Lookups.ListingTypes)
-                    {
-                        <div class="col-md-6">
-                            <input type="radio" class="choice-input"
-                                   id="type-@type.Id"
-                                   name="Listing.ListingTypeId"
-                                   value="@type.Id"
-                                   checked="@(Model.Listing.ListingTypeId == type.Id)"
-                                   required />
+				<div class="row g-3 mb-4">
+					@foreach (var type in Model.Lookups.ListingTypes)
+					{
+						<div class="col-md-6">
+							<input type="radio" class="choice-input"
+								   id="type-@type.Id"
+								   name="Listing.ListingTypeId"
+								   value="@type.Id"
+								   checked="@(Model.Listing.ListingTypeId == type.Id)"
+								   required />
 
-                            <label class="choice-card" for="type-@type.Id">
-                                <span class="choice-radio"></span>
-                                <span>
-                                    <strong class="d-block">@type.Name</strong>
-                                    <small class="text-muted">
-                                        @(type.Id == 1 ? "Etwas abgeben, verkaufen oder anbieten"
-                                                       : "Etwas finden, leihen oder Hilfe bekommen")
-                                    </small>
-                                </span>
-                            </label>
-                        </div>
-                    }
-                </div>
+							<label class="choice-card" for="type-@type.Id">
+								<span class="choice-radio"></span>
+								<span>
+									<strong class="d-block">@type.Name</strong>
+									<small class="text-muted">
+										@(type.Id == 1 ? "Etwas abgeben, verkaufen oder anbieten"
+																			: "Etwas finden, leihen oder Hilfe bekommen")
+								</small>
+							</span>
+						</label>
+					</div>
+										}
+				</div>
 
-                <label class="form-label fw-semibold">Kategorie</label>
-                <div class="choice-grid">
-                    @foreach (var category in Model.Lookups.Categories)
-                    {
-                        <input type="radio" class="choice-input"
-                               id="cat-@category.Id"
-                               name="Listing.CategoryId"
-                               value="@category.Id"
-                               checked="@(Model.Listing.CategoryId == category.Id)"
-                               required />
+				<label class="form-label fw-semibold">Kategorie</label>
+				<div class="choice-grid">
+					@foreach (var category in Model.Lookups.Categories)
+					{
+						<input type="radio" class="choice-input"
+							   id="cat-@category.Id"
+							   name="Listing.CategoryId"
+							   value="@category.Id"
+							   checked="@(Model.Listing.CategoryId == category.Id)"
+							   required />
 
-                        <label class="choice-button" for="cat-@category.Id">@category.Name</label>
-                    }
-                </div>
-            </div>
+						<label class="choice-button" for="cat-@category.Id">@category.Name</label>
+					}
+				</div>
+			</div>
 
-            <!-- Schritt 2–5 kommen hier hin -->
-            <!-- 2. Titel & Beschreibung -->
-            <div class="defaultdiv p-4 mb-3">
-                <h5 class="section-heading">
-                    <span class="section-number">2</span> Titel & Beschreibung
-                </h5>
+			<!-- Schritt 2–5 kommen hier hin -->
+			<!-- 2. Titel & Beschreibung -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading">
+					<span class="section-number">2</span> Titel & Beschreibung
+				</h5>
 
-                <!-- Titel -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <label asp-for="Listing.Name" class="form-label fw-semibold">Titel</label>
-                        <small class="text-muted"><span id="nameCount">0</span> / 80</small>
-                    </div>
-                    <input asp-for="Listing.Name" class="form-control"
-                           maxlength="80" required
-                           placeholder="z. B. Kinderfahrrad 20 Zoll, kaum benutzt"
-                           data-counter="nameCount" />
-                </div>
+				<!-- Titel -->
+				<div class="mb-3">
+					<div class="d-flex justify-content-between">
+						<label asp-for="Listing.Name" class="form-label fw-semibold">Titel</label>
+						<small class="text-muted"><span id="nameCount">0</span> / 80</small>
+					</div>
+					<input asp-for="Listing.Name" class="form-control"
+						   maxlength="80" required
+						   placeholder="z. B. Kinderfahrrad 20 Zoll, kaum benutzt"
+						   data-counter="nameCount" />
+				</div>
 
-                <!-- Beschreibung -->
-                <div>
-                    <div class="d-flex justify-content-between">
-                        <label asp-for="Listing.Description" class="form-label fw-semibold">Beschreibung</label>
-                        <small class="text-muted"><span id="descriptionCount">0</span> / 2000</small>
-                    </div>
-                    <textarea asp-for="Listing.Description" class="form-control"
-                              rows="6" maxlength="2000" required
-                              placeholder="Zustand, Maße, Abholung, Verfügbarkeit … Leerzeile für neuen Absatz."
-                              data-counter="descriptionCount"></textarea>
-                </div>
-            </div>
+				<!-- Beschreibung -->
+				<div>
+					<div class="d-flex justify-content-between">
+						<label asp-for="Listing.Description" class="form-label fw-semibold">Beschreibung</label>
+						<small class="text-muted"><span id="descriptionCount">0</span> / 2000</small>
+					</div>
+					<textarea asp-for="Listing.Description" class="form-control"
+							  rows="6" maxlength="2000" required
+							  placeholder="Zustand, Maße, Abholung, Verfügbarkeit … Leerzeile für neuen Absatz."
+							  data-counter="descriptionCount"></textarea>
+				</div>
+			</div>
 
-        </div>
+			<!-- 3. Preis -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading">
+					<span class="section-number">3</span> Preis
+				</h5>
 
-        <!-- 3. Preis -->
-        <div class="defaultdiv p-4 mb-3">
-            <h5 class="section-heading">
-                <span class="section-number">3</span> Preis
-            </h5>
+				<label class="form-label fw-semibold">Preiskategorie</label>
+				<div class="d-flex flex-wrap gap-2 mb-3">
+					@foreach (var priceCategory in Model.Lookups.PriceCategories)
+					{
+						<input type="radio" class="choice-input price-category"
+							   id="price-@priceCategory.Id"
+							   name="Listing.PriceCategoryId"
+							   value="@priceCategory.Id"
+							   checked="@(Model.Listing.PriceCategoryId == priceCategory.Id)"
+							   required />
 
-            <label class="form-label fw-semibold">Preiskategorie</label>
-            <div class="d-flex flex-wrap gap-2 mb-3">
-                @foreach (var priceCategory in Model.Lookups.PriceCategories)
-                {
-                    <input type="radio" class="choice-input price-category"
-                           id="price-@priceCategory.Id"
-                           name="Listing.PriceCategoryId"
-                           value="@priceCategory.Id"
-                           checked="@(Model.Listing.PriceCategoryId == priceCategory.Id)"
-                           required />
+						<label class="choice-button px-3" for="price-@priceCategory.Id">@priceCategory.Name</label>
+					}
+				</div>
 
-                    <label class="choice-button px-3" for="price-@priceCategory.Id">@priceCategory.Name</label>
-                }
-            </div>
+				<div id="priceGroup">
+					<label for="priceInput" class="form-label fw-semibold">Preis</label>
+					<div class="input-group" style="max-width: 200px">
+						<input type="text" id="priceInput" name="Listing.Price" class="form-control"
+							   inputmode="decimal" placeholder="0"
+							   value="@Model.Listing.Price" />
+						<span class="input-group-text">€</span>
+					</div>
+				</div>
+			</div>
 
-            <div id="priceGroup">
-                <label for="priceInput" class="form-label fw-semibold">Preis</label>
-                <div class="input-group" style="max-width: 200px">
-                    <input type="text" id="priceInput" name="Listing.Price" class="form-control"
-                           inputmode="decimal" placeholder="0"
-                           value="@Model.Listing.Price" />
-                    <span class="input-group-text">€</span>
-                </div>
-            </div>
-        </div>
+			<!-- 4. Fotos -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading mb-1">
+					<span class="section-number">4</span> Fotos
+				</h5>
+				<small class="text-muted d-block mb-3">Optional · das erste Bild ist das Titelbild</small>
 
-        <!-- 4. Fotos -->
-        <div class="defaultdiv p-4 mb-3">
-            <h5 class="section-heading mb-1">
-                <span class="section-number">4</span> Fotos
-            </h5>
-            <small class="text-muted d-block mb-3">Optional · das erste Bild ist das Titelbild</small>
+				<div class="d-flex flex-wrap gap-2">
+					<div id="photoPreview" class="d-flex flex-wrap gap-2"></div>
 
-            <div class="d-flex flex-wrap gap-2">
-                <!-- Vorschau der ausgewählten Fotos (füllt das Script) -->
-                <div id="photoPreview" class="d-flex flex-wrap gap-2"></div>
+					<div class="dropzone dropzone-square">
+						<input type="file" id="photoInput" name="Listing.Attachments"
+							   accept="image/jpeg,image/png,image/gif,image/webp" multiple />
+						<span class="dropzone-plus">+</span>
+						<strong>Fotos hinzufügen</strong>
+						<small class="text-muted">oder hierher ziehen</small>
+					</div>
+				</div>
+			</div>
 
-                <!-- Auswahl-Feld -->
-                <div class="dropzone dropzone-square">
-                    <input type="file" id="photoInput" name="Listing.Attachments"
-                           accept="image/jpeg,image/png,image/gif,image/webp" multiple />
-                    <span class="dropzone-plus">+</span>
-                    <strong>Fotos hinzufügen</strong>
-                    <small class="text-muted">oder hierher ziehen</small>
-                </div>
-            </div>
-        </div>
+			<!-- 5. Anhänge -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading mb-1">
+					<span class="section-number">5</span> Anhänge
+				</h5>
+				<small class="text-muted d-block mb-3">Optional · z. B. Grundriss oder Anleitung als PDF</small>
 
-        <!-- 5. Anhänge -->
-        <div class="defaultdiv p-4 mb-3">
-            <h5 class="section-heading mb-1">
-                <span class="section-number">5</span> Anhänge
-            </h5>
-            <small class="text-muted d-block mb-3">Optional · z. B. Grundriss oder Anleitung als PDF</small>
+				<div class="dropzone dropzone-wide">
+					<input type="file" id="pdfInput" name="Listing.Attachments"
+						   accept="application/pdf" multiple />
+					<span>
+						<strong class="text-primary">↑ Datei auswählen</strong>
+						<span class="text-muted">oder hierher ziehen · PDF · max. 5 MB</span>
+					</span>
+				</div>
 
-            <div class="dropzone dropzone-wide">
-                <input type="file" id="pdfInput" name="Listing.Attachments"
-                       accept="application/pdf" multiple />
-                <span><strong class="text-primary">↑ Datei auswählen</strong>
-                      <span class="text-muted">oder hierher ziehen · PDF · max. 5 MB</span></span>
-            </div>
+				<div id="pdfList" class="mt-2"></div>
+			</div>   <!-- ← Ende Anhänge-Karte (fehlte) -->
+			<!-- 6. Kontakt -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading">
+					<span class="section-number">6</span> Kontakt
+				</h5>
 
-            <!-- Liste der ausgewählten PDFs (füllt das Script) -->
-            <div id="pdfList" class="mt-2"></div>
+				<div class="row g-3">
+					<div class="col-md-6">
+						<label asp-for="Listing.ContactMail" class="form-label fw-semibold">E-Mail</label>
+						<input asp-for="Listing.ContactMail" type="email" class="form-control"
+							   maxlength="255" required
+							   placeholder="z. B. vorname.nachname@firma.de" />
+					</div>
 
-            <!-- 6. Kontakt -->
-            <div class="defaultdiv p-4 mb-3">
-                <h5 class="section-heading">
-                    <span class="section-number">6</span> Kontakt
-                </h5>
+					<div class="col-md-6">
+						<label asp-for="Listing.ContactPhone" class="form-label fw-semibold">
+							Telefon <span class="text-muted fw-normal">(optional)</span>
+						</label>
+						<input asp-for="Listing.ContactPhone" type="tel" class="form-control"
+							   maxlength="50"
+							   placeholder="z. B. 0151 234 56 78" />
+						<small class="text-muted">Leer lassen, wenn nur per E-Mail</small>
+					</div>
+				</div>
+			</div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label asp-for="Listing.ContactMail" class="form-label fw-semibold">E-Mail</label>
-                        <input asp-for="Listing.ContactMail" type="email" class="form-control"
-                               maxlength="255" required
-                               placeholder="z. B. vorname.nachname@firma.de" />
-                    </div>
+		</div>   <!-- ← Ende col-lg-8 (linke Spalte) -->
+		<!-- ===== Rechte Spalte: Vorschau & Buttons (Schritt 6) ===== -->
+		<div class="col-lg-4">
+			<div class="sticky-sidebar">
 
-                    <div class="col-md-6">
-                        <label asp-for="Listing.ContactPhone" class="form-label fw-semibold">
-                            Telefon <span class="text-muted fw-normal">(optional)</span>
-                        </label>
-                        <input asp-for="Listing.ContactPhone" type="tel" class="form-control"
-                               maxlength="50"
-                               placeholder="z. B. 0151 234 56 78" />
-                        <small class="text-muted">Leer lassen, wenn nur per E-Mail</small>
-                    </div>
-                </div>
-            </div>
-</div>
+				<!-- Vorschau -->
+				<small class="fw-semibold text-muted d-block mb-2">Vorschau in der Übersicht</small>
+				<div class="defaultdiv p-0 overflow-hidden mb-3">
+					<div class="preview-image">
+						<img id="previewImg" class="d-none" />
+						<span id="previewNoImg" class="preview-noimg">kein Foto</span>
+						<span id="previewCategory" class="preview-badge">Kategorie</span>
+					</div>
+					<div class="p-3">
+						<div id="previewTitle" class="preview-title text-muted">Titel deines Inserats</div>
+						<div id="previewPrice" class="preview-price">– €</div>
+						<small class="text-muted">heute</small>
+					</div>
+				</div>
 
-        <!-- ===== Rechte Spalte: Vorschau & Buttons (Schritt 6) ===== -->
-       <div class="col-lg-4">
-            <div class="sticky-sidebar">
+				<!-- Checkliste + Buttons -->
+				<div class="defaultdiv p-4">
+					<ul class="checklist">
+						<li data-check="category">Kategorie gewählt</li>
+						<li data-check="title">Titel</li>
+						<li data-check="description">Beschreibung</li>
+						<li data-check="price">Preis</li>
+						<li data-check="photos">Fotos (optional)</li>
+					</ul>
 
-                <!-- Vorschau -->
-                <small class="fw-semibold text-muted d-block mb-2">Vorschau in der Übersicht</small>
-                <div class="defaultdiv p-0 overflow-hidden mb-3">
-                    <div class="preview-image">
-                        <img id="previewImg" class="d-none" />
-                        <span id="previewNoImg" class="preview-noimg">kein Foto</span>
-                        <span id="previewCategory" class="preview-badge">Kategorie</span>
-                    </div>
-                    <div class="p-3">
-                        <div id="previewTitle" class="preview-title text-muted">Titel deines Inserats</div>
-                        <div id="previewPrice" class="preview-price">– €</div>
-                        <small class="text-muted">heute</small>
-                    </div>
-                </div>
+					<button type="submit" class="btn-contact mb-2">Veröffentlichen</button>
+					<a asp-action="Index" class="btn-cancel">Abbrechen</a>
+				</div>
+			</div>
+		</div>
 
-                <!-- Checkliste + Buttons -->
-                <div class="defaultdiv p-4">
-                    <ul class="checklist">
-                        <li data-check="category">Kategorie gewählt</li>
-                        <li data-check="title">Titel</li>
-                        <li data-check="description">Beschreibung</li>
-                        <li data-check="price">Preis</li>
-                        <li data-check="photos">Fotos (optional)</li>
-                    </ul>
-
-                    <button type="submit" class="btn-contact mb-2">Veröffentlichen</button>
-                    <a asp-action="Index" class="btn-cancel">Abbrechen</a>
-                </div>
-        </div>
-</div>
-
-    </div>
+	</div>
 </form>
 
 @section Scripts {
-    <script>
-        // Zeichenzähler: für jedes Feld mit data-counter
-        document.querySelectorAll('[data-counter]').forEach(function (field) {
-            const counter = document.getElementById(field.dataset.counter);
+	<script>
+		// Zeichenzähler: für jedes Feld mit data-counter
+		document.querySelectorAll('[data-counter]').forEach(function (field) {
+			const counter = document.getElementById(field.dataset.counter);
 
-            function update() {
-                counter.textContent = field.value.length;
-            }
+			function update() {
+				counter.textContent = field.value.length;
+			}
 
-            field.addEventListener('input', update);
-            update();   // einmal sofort, falls das Feld schon Text hat
-        });
+			field.addEventListener('input', update);
+			update();   // einmal sofort, falls das Feld schon Text hat
+		});
 
-        // Preisfeld bei "Zu verschenken" (3) und "Tausch" (4) ausblenden
-        const noPriceIds = ['3', '4'];
-        const priceGroup = document.getElementById('priceGroup');
-        const priceInput = document.getElementById('priceInput');
+		// Preisfeld bei "Zu verschenken" (3) und "Tausch" (4) ausblenden
+		const noPriceIds = ['3', '4'];
+		const priceGroup = document.getElementById('priceGroup');
+		const priceInput = document.getElementById('priceInput');
 
-        function togglePrice() {
-            const selected = document.querySelector('.price-category:checked');
-            const hidePrice = selected && noPriceIds.includes(selected.value);
+		function togglePrice() {
+			const selected = document.querySelector('.price-category:checked');
+			const hidePrice = selected && noPriceIds.includes(selected.value);
 
-            priceGroup.classList.toggle('d-none', hidePrice);
-            priceInput.required = !hidePrice;
-        }
+			priceGroup.classList.toggle('d-none', hidePrice);
+			priceInput.required = !hidePrice;
+		}
 
-        document.querySelectorAll('.price-category').forEach(function (radio) {
-            radio.addEventListener('change', togglePrice);
-        });
-        togglePrice();
+		document.querySelectorAll('.price-category').forEach(function (radio) {
+			radio.addEventListener('change', togglePrice);
+		});
+		togglePrice();
 
-        // Fotos: Vorschaubilder anzeigen
-        document.getElementById('photoInput').addEventListener('change', function () {
-            const preview = document.getElementById('photoPreview');
-            preview.innerHTML = '';   // alte Vorschau leeren
+		// Fotos: Vorschaubilder anzeigen
+		document.getElementById('photoInput').addEventListener('change', function () {
+			const preview = document.getElementById('photoPreview');
+			preview.innerHTML = '';   // alte Vorschau leeren
 
-            Array.from(this.files).forEach(function (file, index) {
-                const div = document.createElement('div');
-                div.className = 'photo-thumb';
+			Array.from(this.files).forEach(function (file, index) {
+				const div = document.createElement('div');
+				div.className = 'photo-thumb';
 
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                div.appendChild(img);
+				const img = document.createElement('img');
+				img.src = URL.createObjectURL(file);
+				div.appendChild(img);
 
-                if (index === 0) {
-                    const badge = document.createElement('span');
-                    badge.className = 'title-badge';
-                    badge.textContent = 'Titelbild';
-                    div.appendChild(badge);
-                }
+				if (index === 0) {
+					const badge = document.createElement('span');
+					badge.className = 'title-badge';
+					badge.textContent = 'Titelbild';
+					div.appendChild(badge);
+				}
 
-                preview.appendChild(div);
-            });
-        });
+				preview.appendChild(div);
+			});
+		});
 
-        // PDFs: Dateinamen auflisten
-        document.getElementById('pdfInput').addEventListener('change', function () {
-            const list = document.getElementById('pdfList');
-            list.innerHTML = '';
+		// PDFs: Dateinamen auflisten
+		document.getElementById('pdfInput').addEventListener('change', function () {
+			const list = document.getElementById('pdfList');
+			list.innerHTML = '';
 
-            Array.from(this.files).forEach(function (file) {
-                const row = document.createElement('div');
-                row.className = 'small text-muted';
-                row.textContent = '📄 ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
-                list.appendChild(row);
-            });
-        });
+			Array.from(this.files).forEach(function (file) {
+				const row = document.createElement('div');
+				row.className = 'small text-muted';
+				row.textContent = '📄 ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+				list.appendChild(row);
+			});
+		});
 
-        // ===== Live-Vorschau und Checkliste =====
-        const form = document.querySelector('form');
+		// ===== Live-Vorschau und Checkliste =====
+		const form = document.querySelector('form');
 
-        function setDone(key, isDone) {
-            document.querySelector('[data-check="' + key + '"]').classList.toggle('done', isDone);
-        }
+		function setDone(key, isDone) {
+			document.querySelector('[data-check="' + key + '"]').classList.toggle('done', isDone);
+		}
 
-        function updatePreview() {
-            // Kategorie
-            const category = document.querySelector('input[name="Listing.CategoryId"]:checked');
-            document.getElementById('previewCategory').textContent =
-                category ? document.querySelector('label[for="' + category.id + '"]').textContent : 'Kategorie';
-            setDone('category', category !== null);
+		function updatePreview() {
+			// Kategorie
+			const category = document.querySelector('input[name="Listing.CategoryId"]:checked');
+			document.getElementById('previewCategory').textContent =
+				category ? document.querySelector('label[for="' + category.id + '"]').textContent : 'Kategorie';
+			setDone('category', category !== null);
 
-            // Titel
-            const title = document.getElementById('Listing_Name').value.trim();
-            const previewTitle = document.getElementById('previewTitle');
-            previewTitle.textContent = title || 'Titel deines Inserats';
-            previewTitle.classList.toggle('text-muted', title === '');
-            setDone('title', title !== '');
+			// Titel
+			const title = document.getElementById('Listing_Name').value.trim();
+			const previewTitle = document.getElementById('previewTitle');
+			previewTitle.textContent = title || 'Titel deines Inserats';
+			previewTitle.classList.toggle('text-muted', title === '');
+			setDone('title', title !== '');
 
-            // Beschreibung
-            const description = document.getElementById('Listing_Description').value.trim();
-            setDone('description', description !== '');
+			// Beschreibung
+			const description = document.getElementById('Listing_Description').value.trim();
+			setDone('description', description !== '');
 
-            // Preis
-            const priceCategory = document.querySelector('.price-category:checked');
-            const price = document.getElementById('priceInput').value.trim();
-            const noPrice = priceCategory && noPriceIds.includes(priceCategory.value);
+			// Preis
+			const priceCategory = document.querySelector('.price-category:checked');
+			const price = document.getElementById('priceInput').value.trim();
+			const noPrice = priceCategory && noPriceIds.includes(priceCategory.value);
 
-            if (noPrice) {
-                document.getElementById('previewPrice').textContent =
-                    document.querySelector('label[for="' + priceCategory.id + '"]').textContent;
-            } else {
-                document.getElementById('previewPrice').textContent = (price || '–') + ' €';
-            }
-            setDone('price', priceCategory !== null && (noPrice || price !== ''));
+			if (noPrice) {
+				document.getElementById('previewPrice').textContent =
+					document.querySelector('label[for="' + priceCategory.id + '"]').textContent;
+			} else {
+				document.getElementById('previewPrice').textContent = (price || '–') + ' €';
+			}
+			setDone('price', priceCategory !== null && (noPrice || price !== ''));
 
-            // Fotos
-            const photos = document.getElementById('photoInput').files;
-            const previewImg = document.getElementById('previewImg');
-            const hasPhoto = photos.length > 0;
+			// Fotos
+			const photos = document.getElementById('photoInput').files;
+			const previewImg = document.getElementById('previewImg');
+			const hasPhoto = photos.length > 0;
 
-            if (hasPhoto) {
-                previewImg.src = URL.createObjectURL(photos[0]);
-            }
-            previewImg.classList.toggle('d-none', !hasPhoto);
-            document.getElementById('previewNoImg').classList.toggle('d-none', hasPhoto);
-            setDone('photos', hasPhoto);
-        }
+			if (hasPhoto) {
+				previewImg.src = URL.createObjectURL(photos[0]);
+			}
+			previewImg.classList.toggle('d-none', !hasPhoto);
+			document.getElementById('previewNoImg').classList.toggle('d-none', hasPhoto);
+			setDone('photos', hasPhoto);
+		}
 
-        form.addEventListener('input', updatePreview);
-        form.addEventListener('change', updatePreview);
-        updatePreview();
-    </script>
+		form.addEventListener('input', updatePreview);
+		form.addEventListener('change', updatePreview);
+		updatePreview();
+	</script>
 }
