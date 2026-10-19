@@ -1,4 +1,8 @@
-﻿@model Listing
+﻿@section Styles {
+	<link rel="stylesheet" href="~/css/views/details.css" asp-append-version="true" />
+}
+
+@model Listing
 
 @{
 	var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
@@ -157,10 +161,15 @@
 
 				@if (!string.IsNullOrEmpty(Model.ContactPhone))
 				{
-					<a href="tel:@Model.ContactPhone" class="contact-tile">
-						<small>Telefon</small>
-						<strong>@Model.ContactPhone</strong>
-					</a>
+					<div class="contact-tile d-flex align-items-center justify-content-between">
+						<div>
+							<small>Telefon</small>
+							<strong>@Model.ContactPhone</strong>
+						</div>
+						<button type="button" class="btn-copy" data-copy="@Model.ContactPhone" title="Kopieren">
+							<i class="bi bi-clipboard"></i>
+						</button>
+					</div>
 				}
 			</div>
 
@@ -236,6 +245,38 @@
 		document.getElementById('showContactBtn').addEventListener('click', function () {
 			this.classList.add('d-none');
 			document.getElementById('contactInfo').classList.remove('d-none');
+		});
+
+				// ===== In die Zwischenablage kopieren =====
+		function copyFallback(text) {
+			const temp = document.createElement('textarea');
+			temp.value = text;
+			document.body.appendChild(temp);
+			temp.select();
+			document.execCommand('copy');
+			temp.remove();
+		}
+
+		document.querySelectorAll('[data-copy]').forEach(function (btn) {
+			btn.addEventListener('click', async function () {
+				const text = this.dataset.copy;
+
+				try {
+					await navigator.clipboard.writeText(text);
+				} catch {
+					copyFallback(text);
+				}
+
+				// Kurz ein Häkchen als Bestätigung zeigen
+				const icon = this.querySelector('i');
+				icon.className = 'bi bi-check2';
+				this.classList.add('copied');
+
+				setTimeout(() => {
+					icon.className = 'bi bi-clipboard';
+					this.classList.remove('copied');
+				}, 1500);
+			});
 		});
 	</script>
 }

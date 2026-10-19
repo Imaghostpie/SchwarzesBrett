@@ -17,7 +17,11 @@ namespace SchwarzesBrett
             builder.Services.AddSingleton<Connection>();
 
             builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
-                .AddNegotiate();
+               .AddNegotiate(options =>
+               {
+                   options.PersistKerberosCredentials = true;
+               });
+
             builder.Services.AddAuthorization(options =>
             {
                 options.FallbackPolicy = options.DefaultPolicy;

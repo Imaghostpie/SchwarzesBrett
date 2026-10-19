@@ -11,6 +11,7 @@ namespace SchwarzesBrett
     public class Connection(IConfiguration config, IHttpContextAccessor http)
     {
         private readonly string _conString = config.GetConnectionString("DefaultConnection")!;
+        private readonly bool _impersonate = config.GetValue<bool>("UseImpersonation");
 
         private WindowsIdentity CurrentIdentity =>
             http.HttpContext?.User.Identity as WindowsIdentity
@@ -18,12 +19,18 @@ namespace SchwarzesBrett
 
         private Task<T> RunAsync<T>(Func<SqlConnection, Task<T>> work)
         {
-            return WindowsIdentity.RunImpersonatedAsync(CurrentIdentity.AccessToken, async () =>
+            // Verbindung öffnen und Arbeit ausführen
+            async Task<T> Execute()
             {
                 await using SqlConnection connection = new SqlConnection(_conString);
                 await connection.OpenAsync();
                 return await work(connection);
-            });
+            }
+
+            // Mit Impersonation (Server) oder ohne (lokal)
+            return _impersonate
+                ? WindowsIdentity.RunImpersonatedAsync(CurrentIdentity.AccessToken, Execute)
+                : Execute();
         }
 
         private Task RunAsync(Func<SqlConnection, Task> work)
