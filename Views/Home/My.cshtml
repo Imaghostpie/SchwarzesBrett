@@ -2,27 +2,21 @@
     <link rel="stylesheet" href="~/css/views/my.css" asp-append-version="true" />
 }
 
-@model List<ListingTile>
+@model MyViewModel
 
 @{
-    ViewData["Title"] = "Meine Inserate";
+     ViewData["Title"] = "Meine Inserate";
 
-    int activeCount = Model.Count(t => t.StatusId == 1);
-
-    var tabs = new[]
-    {
-        (Id: 1, Name: "Aktiv"),
-        (Id: 2, Name: "Reserviert"),
-        (Id: 3, Name: "Verkauft / Gefunden"),
-        (Id: 4, Name: "Abgelaufen")
-    };
+    int activeCount = Model.Tiles.Count(t => t.StatusId == 1);
+    var tabs = Model.Statuses.Where(s => s.Id != 5).ToList();                    // alle außer Gelöscht
+    var selectable = Model.Statuses.Where(s => s.Id != 4 && s.Id != 5).ToList(); 
 }
 
 <!-- ================= Kopfzeile ================= -->
 <div class="d-flex justify-content-between align-items-start mb-3">
     <div>
         <h1 class="page-title">Meine Inserate</h1>
-        <small class="text-muted">@Model.Count Inserate, davon @activeCount aktiv</small>
+        <small class="text-muted">@Model.Tiles.Count Inserate, davon @activeCount aktiv</small>
     </div>
 
     <select id="sortSelect" class="form-select sort-select">
@@ -35,20 +29,20 @@
 <!-- ================= Status- ================= -->
 <div class="status-tabs">
     <button type="button" class="status-tab active" data-status="all">
-        Alle <span class="tab-count">@Model.Count</span>
+        Alle <span class="tab-count">@Model.Tiles.Count</span>
     </button>
 
     @foreach (var tab in tabs)
     {
         <button type="button" class="status-tab" data-status="@tab.Id">
-            @tab.Name <span class="tab-count">@Model.Count(t => t.StatusId == tab.Id)</span>
+            @tab.Name <span class="tab-count">@Model.Tiles.Count(t => t.StatusId == tab.Id)</span>
         </button>
     }
 </div>
 
 <!-- ================= Liste ================= -->
 <div id="myList">
-    @if (Model.Count == 0)
+    @if (Model.Tiles.Count == 0)
     {
         <div class="defaultdiv p-5 text-center text-muted">
             Du hast noch keine Inserate.<br />
@@ -56,19 +50,20 @@
         </div>
     }
 
-    @foreach (var tile in Model)
+    @foreach (var tile in Model.Tiles)
     {
         string imageUrl = tile.TitleImageId is int imgId
         ? Url.Action("Attachment", new { id = imgId })!
         : Url.Content($"~/Images/CategoryPlaceholders/Placeholder_{tile.CategoryID}.svg");
 
         bool isExpired = tile.StatusId == 4;
-        bool showExtend = isExpired || (tile.StatusId is 1 or 2 && tile.DaysLeft <= 14);
+        bool showExtend = !tile.IsPermanent
+            && (isExpired || (tile.StatusId is 1 or 2 or 6 && tile.DaysLeft <= 14));
 
         <div class="my-row @(tile.StatusId == 3 ? "is-done" : "")"
              data-status="@tile.StatusId"
              data-created="@tile.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss")"
-             data-validuntil="@tile.ValidUntil.ToString("yyyy-MM-ddTHH:mm:ss")">
+             data-validuntil="@(tile.ValidUntil?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "9999-12-31")">
 
             <a asp-action="Details" asp-route-id="@tile.Id" class="my-thumb">
                 <img src="@imageUrl" alt="@tile.Name" />
@@ -94,16 +89,23 @@
 
             <div class="my-valid">
                 <small class="text-muted d-block">Gültig bis</small>
-                <strong>@tile.ValidUntil.ToString("dd.MM.yyyy")</strong>
-                @if (tile.DaysLeft < 0)
+                @if (tile.IsPermanent)
                 {
-                    <small class="d-block text-danger">abgelaufen</small>
+                    <strong>unbegrenzt</strong>
                 }
                 else
                 {
-                    <small class="d-block @(tile.DaysLeft <= 7 ? "text-warning-emphasis" : "text-muted")">
-                        noch @tile.DaysLeft @(tile.DaysLeft == 1 ? "Tag" : "Tage")
-                    </small>
+                    <strong>@tile.ValidUntil!.Value.ToString("dd.MM.yyyy")</strong>
+                    @if (tile.DaysLeft < 0)
+                    {
+                        <small class="d-block text-danger">abgelaufen</small>
+                    }
+                    else
+                    {
+                        <small class="d-block @(tile.DaysLeft <= 7 ? "text-warning-emphasis" : "text-muted")">
+                            noch @tile.DaysLeft @(tile.DaysLeft == 1 ? "Tag" : "Tage")
+                        </small>
+                    }
                 }
             </div>
 
@@ -154,49 +156,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        const list = document.getElementById('myList');
-        const rows = Array.from(document.querySelectorAll('.my-row'));
-        const noResults = document.getElementById('noResults');
-        const sortSelect = document.getElementById('sortSelect');
-        let currentStatus = 'all';
-
-        function apply() {
-            // Sortieren
-            const sort = sortSelect.value;
-            rows.sort(function (a, b) {
-                if (sort === 'oldest')   return a.dataset.created.localeCompare(b.dataset.created);
-                if (sort === 'expiring') return a.dataset.validuntil.localeCompare(b.dataset.validuntil);
-                return b.dataset.created.localeCompare(a.dataset.created);   // newest
-            });
-
-            // Filtern und in neuer Reihenfolge einsortieren
-            let visible = 0;
-            rows.forEach(function (row) {
-                const show = currentStatus === 'all' || row.dataset.status === currentStatus;
-                row.classList.toggle('d-none', !show);
-                if (show) visible++;
-                list.insertBefore(row, noResults);
-            });
-
-            noResults.classList.toggle('d-none', visible > 0 || rows.length === 0);
-        }
-
-        // Reiter
-        document.querySelectorAll('.status-tab').forEach(function (tab) {
-            tab.addEventListener('click', function () {
-                document.querySelectorAll('.status-tab').forEach(function (t) {
-                    t.classList.remove('active');
-                });
-                this.classList.add('active');
-                currentStatus = this.dataset.status;
-                apply();
-            });
-        });
-
-        // Sortierung
-        sortSelect.addEventListener('change', apply);
-
-        apply();
-    </script>
+    <script src="~/js/views/my.js" asp-append-version="true"></script>
 }

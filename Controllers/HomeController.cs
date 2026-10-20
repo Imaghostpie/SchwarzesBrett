@@ -34,8 +34,13 @@ namespace SchwarzesBrett.Controllers
       
         public async Task<IActionResult> My()
         {
-            List<ListingTile> tiles = await connection.ListingsGetByUser();
-            return View(tiles);
+            ListingLookups lookups = await connection.LookupsGetAll();
+            MyViewModel model = new()
+            {
+                Tiles = await connection.ListingsGetByUser(),
+                Statuses = lookups.Statuses
+            };
+            return View(model);
         }
 
         ///////////////////////////// Create \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -106,7 +111,10 @@ namespace SchwarzesBrett.Controllers
                     PriceCategoryId = listing.PriceCategory.Id,
                     Price = listing.Price,
                     ContactPhone = listing.ContactPhone,
-                    ContactMail = listing.ContactMail
+                    ContactMail = listing.ContactMail,
+                    ValidFrom = listing.ValidFrom,
+                    ValidUntil = listing.ValidUntil,
+                    IsPermanent = listing.IsPermanent
                 },
                 Lookups = await connection.LookupsGetAll(),
                 Attachments = listing.Attachments

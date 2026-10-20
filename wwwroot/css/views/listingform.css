@@ -307,3 +307,24 @@
     text-align: center;
     text-decoration: none;
 }
+
+/* ===== Laufzeit: Schnellauswahl ===== */
+.period-btn {
+    padding: 6px 14px;
+    border: 1px solid #d5dbe5;
+    border-radius: 6px;
+    background-color: white;
+    color: #1b2235;
+    font-size: 0.875rem;
+}
+
+    .period-btn:hover {
+        border-color: #1a66e0;
+    }
+
+    .period-btn.active {
+        border-color: #1a66e0;
+        background-color: #f0f5ff;
+        color: #1a66e0;
+        font-weight: 600;
+    }

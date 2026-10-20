@@ -99,7 +99,8 @@ namespace SchwarzesBrett
                     ListingTypeId = Convert.ToInt32(reader["listingTypeID"]),
                     TitleImageId = reader["TitleImageId"] as int?,
                     StatusId = Convert.ToInt32(reader["status"]),
-                    ValidUntil = Convert.ToDateTime(reader["valid_until"])
+                    ValidFrom = Convert.ToDateTime(reader["valid_from"]),
+                    ValidUntil = reader["valid_until"] as DateTime?
                 });
             }
             return tiles;
@@ -124,7 +125,8 @@ namespace SchwarzesBrett
                 CreatedBy = Convert.ToString(reader["created_by"])!,
                 ContactPhone = reader["contact_phone"] as string,
                 ContactMail = Convert.ToString(reader["contact_mail"])!,
-                ValidUntil = Convert.ToDateTime(reader["valid_until"]),
+                ValidFrom = Convert.ToDateTime(reader["valid_from"]),
+                ValidUntil = reader["valid_until"] as DateTime?,
                 ListingType = new ListingType { Id = Convert.ToInt32(reader["listingTypeID"]), Name = Convert.ToString(reader["listingType_Name"])! },
                 Category = new Category { Id = Convert.ToInt32(reader["categoryID"]), Name = Convert.ToString(reader["category_Name"])! },
                 PriceCategory = new PriceCategory { Id = Convert.ToInt32(reader["priceCategoryID"]), Name = Convert.ToString(reader["priceCategory_Name"])! },
@@ -187,6 +189,27 @@ namespace SchwarzesBrett
             command.Parameters.AddWithValue("@contact_phone", (object?)request.ContactPhone ?? DBNull.Value);
             command.Parameters.AddWithValue("@contact_mail", request.ContactMail);
 
+            DateTime validFrom;
+            object validUntil;
+
+            if (!request.UseCustomPeriod)
+            {
+                // Standard: ab heute, 6 Monate
+                validFrom = DateTime.Today;
+                validUntil = DateTime.Today.AddMonths(6);
+            }
+            else
+            {
+                validFrom = request.ValidFrom.Date;
+                validUntil = request.IsPermanent || request.ValidUntil == null
+                    ? DBNull.Value
+                    : request.ValidUntil.Value.Date;
+            }
+
+            command.Parameters.AddWithValue("@valid_from", validFrom);
+            command.Parameters.AddWithValue("@valid_until", validUntil);
+
+
             int listingId = (int)(await command.ExecuteScalarAsync())!;
 
             int imageIndex = 0;
@@ -215,6 +238,11 @@ namespace SchwarzesBrett
             command.Parameters.AddWithValue("@price", (object?)request.Price ?? DBNull.Value);
             command.Parameters.AddWithValue("@contact_phone", (object?)request.ContactPhone ?? DBNull.Value);
             command.Parameters.AddWithValue("@contact_mail", request.ContactMail);
+            command.Parameters.AddWithValue("@valid_from", request.ValidFrom.Date);
+            command.Parameters.AddWithValue("@valid_until",
+                request.IsPermanent || request.ValidUntil == null
+                    ? DBNull.Value
+                    : request.ValidUntil.Value.Date);
             await command.ExecuteNonQueryAsync();
         });
 

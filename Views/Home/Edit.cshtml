@@ -10,6 +10,11 @@
     var images = Model.Attachments.Where(a => a.FileType.StartsWith("image/")).ToList();
     var pdfs = Model.Attachments.Where(a => a.FileType == "application/pdf").ToList();
     int? titleId = images.FirstOrDefault(x => x.IsTitle)?.Id ?? images.FirstOrDefault()?.Id;
+
+    // Läuft das Inserat schon, darf das alte Startdatum stehen bleiben
+    var minFrom = Model.Listing.ValidFrom.Date < DateTime.Today
+        ? Model.Listing.ValidFrom.Date
+        : DateTime.Today;
 }
 
 <!-- ================= Kopfzeile ================= -->
@@ -134,6 +139,46 @@
                 </div>
             </div>
 
+            <!-- 5. Laufzeit -->
+            <div class="defaultdiv p-4 mb-3">
+                <h5 class="section-heading">
+                    <span class="section-number">5</span> Laufzeit
+                </h5>
+
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="validFrom" class="form-label fw-semibold">Gültig ab</label>
+                        <input type="date" id="validFrom" name="Listing.ValidFrom" class="form-control"
+                               value="@Model.Listing.ValidFrom.ToString("yyyy-MM-dd")"
+                               min="@minFrom.ToString("yyyy-MM-dd")" required />
+                    </div>
+
+                    <div class="col-md-4" id="untilGroup">
+                        <label for="validUntil" class="form-label fw-semibold">Gültig bis</label>
+                        <input type="date" id="validUntil" name="Listing.ValidUntil" class="form-control"
+                               value="@Model.Listing.ValidUntil?.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-check form-switch mb-2">
+                            <input type="checkbox" class="form-check-input" role="switch"
+                                   id="isPermanent" name="Listing.IsPermanent" value="true"
+                                   checked="@Model.Listing.IsPermanent" />
+                            <label class="form-check-label" for="isPermanent">Permanent</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <button type="button" class="period-btn" data-days="14">2 Wochen</button>
+                    <button type="button" class="period-btn" data-months="1">1 Monat</button>
+                    <button type="button" class="period-btn" data-months="3">3 Monate</button>
+                    <button type="button" class="period-btn" data-months="6">6 Monate</button>
+                </div>
+
+                <small id="periodHint" class="text-muted d-block mt-2"></small>
+            </div>
+
         </form>
         <!-- ========== Ende Hauptformular ========== -->
 
@@ -253,82 +298,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        // ===== Zeichenzähler =====
-        document.querySelectorAll('[data-counter]').forEach(function (field) {
-            const counter = document.getElementById(field.dataset.counter);
-            function update() { counter.textContent = field.value.length; }
-            field.addEventListener('input', update);
-            update();
-        });
-
-        // ===== Preisfeld ein-/ausblenden =====
-        const noPriceIds = ['3', '4'];
-        const priceGroup = document.getElementById('priceGroup');
-        const priceInput = document.getElementById('priceInput');
-
-        function togglePrice() {
-            const selected = document.querySelector('.price-category:checked');
-            const hidePrice = selected && noPriceIds.includes(selected.value);
-            priceGroup.classList.toggle('d-none', hidePrice);
-            priceInput.required = !hidePrice;
-        }
-
-        document.querySelectorAll('.price-category').forEach(function (radio) {
-            radio.addEventListener('change', togglePrice);
-        });
-        togglePrice();
-
-        // ===== Datei sofort hochladen, sobald ausgewählt =====
-        document.querySelectorAll('.auto-upload').forEach(function (input) {
-            input.addEventListener('change', function () {
-                this.form.submit();
-            });
-        });
-
-        // ===== Live-Vorschau und Checkliste =====
-        const form = document.getElementById('editForm');
-        const firstImageUrl = '@(images.Count > 0 ? Url.Action("Attachment", new { id = images[0].Id }) : "")';
-
-        function setDone(key, isDone) {
-            document.querySelector('[data-check="' + key + '"]').classList.toggle('done', isDone);
-        }
-
-        function updatePreview() {
-            const category = document.querySelector('input[name="Listing.CategoryId"]:checked');
-            document.getElementById('previewCategory').textContent =
-                category ? document.querySelector('label[for="' + category.id + '"]').textContent : 'Kategorie';
-            setDone('category', category !== null);
-
-            const title = document.getElementById('Listing_Name').value.trim();
-            const previewTitle = document.getElementById('previewTitle');
-            previewTitle.textContent = title || 'Titel deines Inserats';
-            previewTitle.classList.toggle('text-muted', title === '');
-            setDone('title', title !== '');
-
-            const description = document.getElementById('Listing_Description').value.trim();
-            setDone('description', description !== '');
-
-            const priceCategory = document.querySelector('.price-category:checked');
-            const price = priceInput.value.trim();
-            const noPrice = priceCategory && noPriceIds.includes(priceCategory.value);
-
-            document.getElementById('previewPrice').textContent = noPrice
-                ? document.querySelector('label[for="' + priceCategory.id + '"]').textContent
-                : (price || '–') + ' €';
-            setDone('price', priceCategory !== null && (noPrice || price !== ''));
-        }
-
-        // Foto: kommt hier aus der Datenbank, ändert sich beim Tippen nicht
-        if (firstImageUrl) {
-            document.getElementById('previewImg').src = firstImageUrl;
-            document.getElementById('previewImg').classList.remove('d-none');
-            document.getElementById('previewNoImg').classList.add('d-none');
-        }
-        setDone('photos', firstImageUrl !== '');
-
-        form.addEventListener('input', updatePreview);
-        form.addEventListener('change', updatePreview);
-        updatePreview();
-    </script>
+    <script src="~/js/views/listing-form.js" asp-append-version="true"></script>
 }

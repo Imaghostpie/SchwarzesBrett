@@ -13,7 +13,9 @@
         public required string CreatedBy { get; set; }
         public string? ContactPhone { get; set; }
         public required string ContactMail { get; set; }
-        public required DateTime ValidUntil { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidUntil { get; set; }
+        public bool IsPermanent => ValidUntil == null;
         public required Status Status { get; set; }
         public List<Attachment>? Attachments { get; set; } = new();
         public string CreatorName
@@ -33,6 +35,8 @@
             }
         }
 
-        public int DaysLeft => (ValidUntil.Date - DateTime.Today).Days;
+        public int? DaysLeft => ValidUntil == null
+            ? null
+            : (ValidUntil.Value.Date - DateTime.Today).Days;
     }
 }

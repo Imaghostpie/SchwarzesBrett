@@ -6,6 +6,7 @@
 
 @{
 	ViewData["Title"] = "Neues Inserat";
+	var minFrom = DateTime.Today;
 }
 
 <!-- ================= Kopfzeile ================= -->
@@ -73,7 +74,6 @@
 				</div>
 			</div>
 
-			<!-- Schritt 2–5 kommen hier hin -->
 			<!-- 2. Titel & Beschreibung -->
 			<div class="defaultdiv p-4 mb-3">
 				<h5 class="section-heading">
@@ -201,6 +201,61 @@
 				</div>
 			</div>
 
+			<!-- 7. Laufzeit -->
+			<div class="defaultdiv p-4 mb-3">
+				<h5 class="section-heading mb-1">
+					<span class="section-number">7</span> Laufzeit
+				</h5>
+				<small class="text-muted d-block mb-3">Optional</small>
+
+				<div class="form-check form-switch">
+					<input type="checkbox" class="form-check-input" role="switch"
+						   id="useCustomPeriod" name="Listing.UseCustomPeriod" value="true"
+						   checked="@Model.Listing.UseCustomPeriod" />
+					<label class="form-check-label" for="useCustomPeriod">Eigenen Zeitraum festlegen</label>
+				</div>
+
+				<small id="defaultHint" class="text-muted d-block mt-2">
+					Startet heute und läuft 6 Monate (bis @DateTime.Today.AddMonths(6).ToString("dd.MM.yyyy")).
+					Du kannst es später jederzeit verlängern.
+				</small>
+
+				<!-- Eigener Zeitraum: nur sichtbar, wenn der Schalter an ist -->
+				<div id="customPeriod" class="mt-3">
+					<div class="row g-3 align-items-end">
+						<div class="col-md-4">
+							<label for="validFrom" class="form-label fw-semibold">Gültig ab</label>
+							<input type="date" id="validFrom" name="Listing.ValidFrom" class="form-control"
+								   value="@Model.Listing.ValidFrom.ToString("yyyy-MM-dd")"
+								   min="@minFrom.ToString("yyyy-MM-dd")" />
+						</div>
+
+						<div class="col-md-4" id="untilGroup">
+							<label for="validUntil" class="form-label fw-semibold">Gültig bis</label>
+							<input type="date" id="validUntil" name="Listing.ValidUntil" class="form-control"
+								   value="@Model.Listing.ValidUntil?.ToString("yyyy-MM-dd")" />
+						</div>
+
+						<div class="col-md-4">
+							<div class="form-check form-switch mb-2">
+								<input type="checkbox" class="form-check-input" role="switch"
+									   id="isPermanent" name="Listing.IsPermanent" value="true"
+									   checked="@Model.Listing.IsPermanent" />
+								<label class="form-check-label" for="isPermanent">Permanent</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="d-flex flex-wrap gap-2 mt-3">
+						<button type="button" class="period-btn" data-days="14">2 Wochen</button>
+						<button type="button" class="period-btn" data-months="1">1 Monat</button>
+						<button type="button" class="period-btn" data-months="3">3 Monate</button>
+						<button type="button" class="period-btn" data-months="6">6 Monate</button>
+					</div>
+
+					<small id="periodHint" class="text-muted d-block mt-2"></small>
+				</div>
+			</div>
 		</div>   <!-- ← Ende col-lg-8 (linke Spalte) -->
 		<!-- ===== Rechte Spalte: Vorschau & Buttons (Schritt 6) ===== -->
 		<div class="col-lg-4">
@@ -228,7 +283,7 @@
 						<li data-check="title">Titel</li>
 						<li data-check="description">Beschreibung</li>
 						<li data-check="price">Preis</li>
-						<li data-check="photos">Fotos (optional)</li>
+						<li data-check="email">Email</li>
 					</ul>
 
 					<button type="submit" class="btn-contact mb-2">Veröffentlichen</button>
@@ -241,147 +296,5 @@
 </form>
 
 @section Scripts {
-	<script>
-		// Zeichenzähler: für jedes Feld mit data-counter
-		document.querySelectorAll('[data-counter]').forEach(function (field) {
-			const counter = document.getElementById(field.dataset.counter);
-
-			function update() {
-				counter.textContent = field.value.length;
-			}
-
-			field.addEventListener('input', update);
-			update();   // einmal sofort, falls das Feld schon Text hat
-		});
-
-		// Preisfeld bei "Zu verschenken" (3) und "Tausch" (4) ausblenden
-		const noPriceIds = ['3', '4'];
-		const priceGroup = document.getElementById('priceGroup');
-		const priceInput = document.getElementById('priceInput');
-
-		function togglePrice() {
-			const selected = document.querySelector('.price-category:checked');
-			const hidePrice = selected && noPriceIds.includes(selected.value);
-
-			priceGroup.classList.toggle('d-none', hidePrice);
-			priceInput.required = !hidePrice;
-		}
-
-		document.querySelectorAll('.price-category').forEach(function (radio) {
-			radio.addEventListener('change', togglePrice);
-		});
-		togglePrice();
-
-				// ===== Fotos: Vorschaubilder mit Stern =====
-		const titleInput = document.getElementById('titleImageIndex');
-
-		function renderPhotoPreview() {
-			const files = document.getElementById('photoInput').files;
-			const preview = document.getElementById('photoPreview');
-			preview.innerHTML = '';
-
-			Array.from(files).forEach(function (file, index) {
-				const div = document.createElement('div');
-				div.className = 'photo-thumb';
-
-				const img = document.createElement('img');
-				img.src = URL.createObjectURL(file);
-				div.appendChild(img);
-
-				if (index === Number(titleInput.value)) {
-					const badge = document.createElement('span');
-					badge.className = 'title-badge';
-					badge.textContent = 'Titelbild';
-					div.appendChild(badge);
-				} else {
-					const star = document.createElement('button');
-					star.type = 'button';
-					star.className = 'photo-star';
-					star.title = 'Als Titelbild festlegen';
-					star.innerHTML = '<i class="bi bi-star"></i>';
-					star.addEventListener('click', function () {
-						titleInput.value = index;
-						renderPhotoPreview();
-						updatePreview();
-					});
-					div.appendChild(star);
-				}
-
-				preview.appendChild(div);
-			});
-		}
-
-		document.getElementById('photoInput').addEventListener('change', function () {
-			titleInput.value = 0;   // neue Auswahl: erstes Foto ist wieder Titelbild
-			renderPhotoPreview();
-		});
-
-		// PDFs: Dateinamen auflisten
-		document.getElementById('pdfInput').addEventListener('change', function () {
-			const list = document.getElementById('pdfList');
-			list.innerHTML = '';
-
-			Array.from(this.files).forEach(function (file) {
-				const row = document.createElement('div');
-				row.className = 'small text-muted';
-				row.textContent = '📄 ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
-				list.appendChild(row);
-			});
-		});
-
-		// ===== Live-Vorschau und Checkliste =====
-		const form = document.querySelector('form');
-
-		function setDone(key, isDone) {
-			document.querySelector('[data-check="' + key + '"]').classList.toggle('done', isDone);
-		}
-
-		function updatePreview() {
-			// Kategorie
-			const category = document.querySelector('input[name="Listing.CategoryId"]:checked');
-			document.getElementById('previewCategory').textContent =
-				category ? document.querySelector('label[for="' + category.id + '"]').textContent : 'Kategorie';
-			setDone('category', category !== null);
-
-			// Titel
-			const title = document.getElementById('Listing_Name').value.trim();
-			const previewTitle = document.getElementById('previewTitle');
-			previewTitle.textContent = title || 'Titel deines Inserats';
-			previewTitle.classList.toggle('text-muted', title === '');
-			setDone('title', title !== '');
-
-			// Beschreibung
-			const description = document.getElementById('Listing_Description').value.trim();
-			setDone('description', description !== '');
-
-			// Preis
-			const priceCategory = document.querySelector('.price-category:checked');
-			const price = document.getElementById('priceInput').value.trim();
-			const noPrice = priceCategory && noPriceIds.includes(priceCategory.value);
-
-			if (noPrice) {
-				document.getElementById('previewPrice').textContent =
-					document.querySelector('label[for="' + priceCategory.id + '"]').textContent;
-			} else {
-				document.getElementById('previewPrice').textContent = (price || '–') + ' €';
-			}
-			setDone('price', priceCategory !== null && (noPrice || price !== ''));
-
-			// Fotos
-			const photos = document.getElementById('photoInput').files;
-			const previewImg = document.getElementById('previewImg');
-			const hasPhoto = photos.length > 0;
-
-			if (hasPhoto) {
-			previewImg.src = URL.createObjectURL(photos[Number(titleInput.value)] || photos[0]);
-			}
-			previewImg.classList.toggle('d-none', !hasPhoto);
-			document.getElementById('previewNoImg').classList.toggle('d-none', hasPhoto);
-			setDone('photos', hasPhoto);
-			}
-
-			form.addEventListener('input', updatePreview);
-			form.addEventListener('change', updatePreview);
-			updatePreview();
-	</script>
+	<script src="~/js/views/listing-form.js" asp-append-version="true"></script>
 }

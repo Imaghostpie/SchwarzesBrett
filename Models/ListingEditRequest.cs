@@ -11,5 +11,8 @@
         public decimal? Price { get; set; }
         public string? ContactPhone { get; set; }
         public string ContactMail { get; set; } = null!;
+        public DateTime ValidFrom { get; set; } = DateTime.Today;
+        public DateTime? ValidUntil { get; set; } = DateTime.Today.AddMonths(1);
+        public bool IsPermanent { get; set; }
     }
 }

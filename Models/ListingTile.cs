@@ -14,9 +14,14 @@ namespace SchwarzesBrett.Models
         public required int ListingTypeId { get; set; }
         public int? TitleImageId { get; set; }
         public int StatusId { get; set; }
-        public DateTime ValidUntil { get; set; }
+        public DateTime ValidFrom { get; set; }
+        public DateTime? ValidUntil { get; set; }
+        public bool IsPermanent => ValidUntil == null;
+        public bool IsScheduled => ValidFrom.Date > DateTime.Today;
 
-        public int DaysLeft => (ValidUntil.Date - DateTime.Today).Days;
+        public int? DaysLeft => ValidUntil == null
+            ? null
+            : (ValidUntil.Value.Date - DateTime.Today).Days;
         public required DateTime CreatedAt { get; set; }
         public string AgeText {
             get
