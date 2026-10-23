@@ -20,7 +20,7 @@ document.querySelectorAll('[data-copy]').forEach(function (btn) {
         {
             await navigator.clipboard.writeText(text);
         }
-        catch
+        catch 
         {
             copyFallback(text);
         }
